@@ -204,16 +204,44 @@ float fmul(float a, float b) {
 //-----------------------------------------------------------------------------
 
 int main() {
-    printf("1a. 0x%04X\n", umultiply(0x0001,0x0001));
-    printf("1b. 0x%04X\n", umultiply(0x0001,0xFFFF));
-    printf("1c. 0x%04X\n", umultiply(0x8000,0x0001));
-    printf("1d. 0x%04X\n", umultiply(0x4000,0x4000));
-    printf("1e. 0x%04X\n", umultiply(0x8000,0x8000));
-
-    INTFLOAT_PTR a;
-    extract_float(a, 0x40C80000);
-    extract_float(a, 0xC3000000);
-    extract_float(a, 0x3E000000);
-    extract_float(a, 0x3EAAAAAB);
-    return 0;
+   printf("1a. 0x%04X\n", umultiply(0x0001,0x0001));
+   printf("1b. 0x%04X\n", umultiply(0x0001,0xFFFF));
+   printf("1c. 0x%04X\n", umultiply(0x8000,0x0001));
+   printf("1d. 0x%04X\n", umultiply(0x4000,0x4000));
+   printf("1e. 0x%04X\n", umultiply(0x8000,0x8000));
+   //Q2 examples
+   INTFLOAT_PTR a;
+   extract_float(a, 0x40C80000);
+   extract_float(a, 0xC3000000);
+   extract_float(a, 0x3E000000);
+   extract_float(a, 0x3EAAAAAB);
+   //Q3 exmples
+   float flt;
+   pack_float(&flt, a);
+   printf("3a. 0x%04X\n", flt);
+   //Q4 examples
+   a->exponent = 0x00000001;
+   a->fraction = 0x40000000;
+   normalize(a);
+   a->exponent = 0x00000000;
+   a->fraction = 0x00200000;
+   normalize(a);
+   a->exponent = 0x0000000C;
+   a->fraction = 0xFFC00000;
+   normalize(a);
+   a->exponent = 0xFFFFFFF8;
+   a->fraction = 0x02000000;
+   normalize(a);
+   //Q5 examples
+   fadd(0xBF800000,0x3F800000);
+   fadd(0x3F800000,0x3E800000);
+   fadd(0x40800000,0xBE000000);
+   //Q6 examples
+   fsub(0x40400000,0x3F800000);
+   fsub(0x40400000,0xBF800000);
+   fsub(0x40000000,0x40000000);
+   //Q7 examples
+   fmul(0x40200000,0x40200000);
+   fmul(0xC1700000,0x45800000);
+   return 0;
 }
