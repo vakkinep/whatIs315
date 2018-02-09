@@ -15,17 +15,17 @@ space:	.asciiz " "
 
 
 main:
-	la $a0, start		#print out intro string
-	li $v0,	4
+	la 	$a0, start	#print out intro string
+	li 	$v0,	4
 	syscall 
-	lw $a0, var1		#print out the final number
-	li $v0, 1		
+	lw 	$a0, var3	#print out the final number
+	li 	$v0, 1		
 	syscall
-	la $a0, newline		#print out newline string
-	li $v0,	4
+	la 	$a0, newline	#print out newline string
+	li 	$v0,	4
 	syscall 
 	
-	lw $a0, var1		#place the number to solve in $a0
+	lw 	$a0, var3	#place the number to solve in $a0
 	jal	fib		#jump to fibonacci function
 	
 	#Display var1 Result
@@ -49,7 +49,8 @@ main:
 #-		- $v1: result
 #-		- $ra: return address
 #-		- $sp: stack pointer
-#-		- $s0: sum
+#-		- $s0: temp sum
+#-		- $s1: temp variable to solve for
 #-	Return: 
 #-	VOID - 	Prints out the values of the fib sequence
 #-		up to the end value and prints that too
@@ -62,24 +63,29 @@ fib:
 	sw	$s0, 4($sp)	#store local variable
 	sw	$s1, 8($sp)
 	
+	move 	$s0, $a0		#store $a0 into $s1
+	
 	#Base Case
-	li $v1 1
-	beq $a0, 0, endFib 	#argument = 0
-	beq $a0, 1, endFib 	#argument = 1
+	beq 	$a0, 0, endFib	 	#argument = 0
+	#add	$v1, $v1, 1
+	beq 	$a0, 1, endFib1 	#argument = 1
 	
 	#fib(n-1)
-	add $a0, $a0, -1
-	move $s0, $a0
-	jal fib
+	#add 	$a0, $a0, -1
+	add 	$a0, $s0, -1
+	jal 	fib
 	
 	#fib(n-2)
-	add $a0, $a0, -1
-	move $s1, $a0
-	jal fib
+	add 	$a0, $s0, -2
+	jal 	fib
 	
 	#Sum
-	add $v1, $s0, $v1
-	add $v1, $s1, $v1
+	move	$v0, $v1		#save into another register
+	add 	$v1, $s1, $v1
+	#add $v1, $s1, $v1
+	
+	endFib1:
+		add 	$v1, $v1, 1
 	
 	endFib:
 		lw 	$ra, ($sp) 	#load return address from stack
