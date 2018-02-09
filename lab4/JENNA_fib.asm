@@ -8,24 +8,12 @@ var4:	.word	10
 var5:	.word	20
 result:	.word	0
 
-start: 	.asciiz "Fibonacci values for the number: "
-newline:.asciiz "\n\n"
-space:	.asciiz " "
 .text
 
 
 main:
-	la $a0, start		#print out intro string
-	li $v0,	4
-	syscall 
-	lw $a0, var1		#print out the final number
-	li $v0, 1		
-	syscall
-	la $a0, newline		#print out newline string
-	li $v0,	4
-	syscall 
-	
-	lw $a0, var1		#place the number to solve in $a0
+	# Solve for var1
+	lw 	$a1, var1	#solve for var1
 	jal	fib		#jump to fibonacci function
 	
 	#Display var1 Result
@@ -42,7 +30,7 @@ main:
 #------------------------------------------------------------
 #-
 #- 	Parameters: 
-#-		- $a0: variable we want to solve for
+#-		- $a1: variable we want to solve for
 #-		- $v1: answer to fibonacci sequence
 #-
 #-	Variables:
@@ -50,9 +38,7 @@ main:
 #-		- $ra: return address
 #-		- $sp: stack pointer
 #-		- $s0: sum
-#-	Return: 
-#-	VOID - 	Prints out the values of the fib sequence
-#-		up to the end value and prints that too
+#-
 #----------------------------------------------------------
 
 fib:	

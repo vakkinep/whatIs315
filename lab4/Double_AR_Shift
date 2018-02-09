@@ -1,0 +1,25 @@
+.text
+main:	#init
+	li $a0, 0xF0F0F0F0		#set original value for high bits in $a0
+	li $a1, 0xF0F0F0F0		#set original value for low  bits in $a1
+	li $a2, 4			#set shift amount
+	#call function
+	jal double_SRA
+	#fin
+	li $v0, 10
+	syscall
+	
+double_SRA:
+#----------------------------------------
+#-	parameters - $a0, $a1, $a2
+#-		$a0: High bits of dbl
+#-		$a1: Low  bits of dbl
+#-		$a2: Shift amount
+#-
+#-	return -
+#-	DBL-	Double stored in 2 reg, 
+#-		high bits in $v0 and low
+#-		bits in $v1
+#-----------------------------------------
+	srav $t0, $a0, $a2 		#shifting the original value by amount in $a2 and storing in $t0
+	

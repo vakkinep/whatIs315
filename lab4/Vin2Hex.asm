@@ -38,7 +38,7 @@ bin2hex:
 #-		-$t3	counter value
 #-		-$t5	temp pointer to address of lookup table
 #-		-$t4	temp value of $a0 we are shifting
-#-		-$t0	temp ascii character to output
+#-		-$t0	temp ascii character to output		
 #-#----------------------------------------
 
 	li	$t3, 8		# counter for the storage of 8 hex digits
@@ -58,8 +58,28 @@ loop1:
 	
 	#NOTE: Table is not being changed to correct values
 	
-
-
+	
+Double_Add:
+#----------------------------------------
+#-	parameters - $a0, $a1, $a2, $a3
+#-		-$a0	high 32 bits of A
+#-		-$a1	low  32 bits of A
+#-		-$a2	high 32 bits of B
+#-		-$a3	low  32 bits of B
+#-
+#-
+#-	variable   - t0
+#-		-$t0	carry bit
+#- 
+#-	return	   -
+#- 	void	-$v0	high bits of sum
+#-		-$v1	low  bits of sum
+#-#----------------------------------------
+	addu	$v1, $a1, $a3	#add low bits
+	sltu	$t0, $v1, $a1	#check carry
+	add	$a0, $t0, $a0	#add carry bit
+	add	$v0, $a0, $a2	#add high bits
+	jr	$ra
 
 
 
