@@ -7,38 +7,36 @@ main:	#init
 	li $a2, 4			#set shift amount
 	
 	#print inital binary
-	li $v0, 35
-	syscall
-	move $t0, $a0			#moving a1 into a0 so syscall prints it
-	move $a0, $a1
-	syscall
-	lw $a0, newline				#printing out the newline
-	li $v0, 4
-	syscall
+	li $v0, 35			#set syscall to print binary
+	syscall				#print high bits
+	move $t0, $a0			#moving a0 into temp value
+	move $a0, $a1			#moving a1 into a0 so it prints
+	syscall				#print
+	lw $a0, newline			#moving the newline string in so it prints
+	li $v0, 4			#set to print string
+	syscall				#print
 	
 	#restore values
-	move $a0, $t0
+	move $a0, $t0			#restore a0 to its rightful place
 
 	#call function
 	jal double_SRA
 	
 	#print out values
-	move $t0, $a0			#save a copy of a0 in t0 
-	move $a0, $v0			#place v0 in a0 so it prints
-	move $t1, $v0			#save a copy of the result number so  
-	li $v0, 35
-	syscall
+	move $t0, $a0			#save a copy of original value(a0) in t0 
+	move $a0, $v0			#place v0 in a0 so it prints out
+	move $t1, $v0			#save a copy of the result number (v0) in temp so it doesnt get lost 
+	li $v0, 35			#set v0 to print binary
+	syscall				#print result high bits
 	
-	move $a0, $v1
-	move $t2, $v1
-	syscall
+	move $a0, $v1			#move v1 to a0 so it prints
+	syscall				#print result low  bits
 	
-	move $a0, $t0
-	move $v0, $t1
-	move $v1, $t1
+	move $a0, $t0			#restore a0 to its rightful home
+	move $v0, $t1			#hark! here comes the herald result!
 	
 	#fin
-	li $v0, 10
+	li $v0, 10			#just die pls ty
 	syscall
 	
 double_SRA:
