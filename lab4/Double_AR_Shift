@@ -1,4 +1,6 @@
-newline: .asciiv "\n"
+.data
+newline: .asciiz "\n\nNEW\n\n"
+space: 	 .asciiz "    "
 
 .text
 main:	#init
@@ -10,9 +12,15 @@ main:	#init
 	li $v0, 35			#set syscall to print binary
 	syscall				#print high bits
 	move $t0, $a0			#moving a0 into temp value
-	move $a0, $a1			#moving a1 into a0 so it prints
+	
+	la $a0, space			#moving the space string in so it prints
+	li $v0, 4			#set to print string
 	syscall				#print
-	lw $a0, newline			#moving the newline string in so it prints
+	
+	move $a0, $a1
+	li $v0, 35 			#moving a1 into a0 so it prints
+	syscall				#print
+	la $a0, newline			#moving the newline string in so it prints
 	li $v0, 4			#set to print string
 	syscall				#print
 	
@@ -29,7 +37,13 @@ main:	#init
 	li $v0, 35			#set v0 to print binary
 	syscall				#print result high bits
 	
+	la $a0, space			#moving the space string in so it prints
+	li $v0, 4			#set to print string
+	syscall				#print
+	
+	
 	move $a0, $v1			#move v1 to a0 so it prints
+	li $v0, 35
 	syscall				#print result low  bits
 	
 	move $a0, $t0			#restore a0 to its rightful home
@@ -51,9 +65,10 @@ double_SRA:
 #-		high bits in $v0 and low
 #-		bits in $v1
 #-----------------------------------------
-	add $t2, 32			#store 32 in reg $t2
-	sub $t1, $a2, $t2		#subtract 32 by shift amount and store in $t1 
-	sll $t0, $a0, $t2 		#shifting the original value by amount in $t2 and storing in $t0
+	add  $t2, $zero, 32		#store 32 in reg $t2
+	sub  $t2, $a2, $t2		#subtract 32 by shift amount and store in $t1 
+	sllv $t0, $a0, $t2		#shifting the original value by amount in $t2 and storing in $t0
 	srav $v0, $a0, $a2		#shift a0 right arithmentically by the shift amt
 	srlv $v1, $a1, $a2		#shift low bits right logically so its padded with 0's
-	or $v1, $t1			#place the cut off high bits in the low bit field
+	or   $v1, $v1, $t1			#place the cut off high bits in the low bit field
+	jr   $ra
