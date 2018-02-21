@@ -1,9 +1,8 @@
-/*----------------------------------------------------------------------*
- *	Example mips_asm program loader. This loads the mips_asm binary	*
- *	named "testcase1.mb" into an array in memory. It reads		*
- *	the 64-byte header, then loads the code into the mem array.	*
- *									*
- *	DLR 4/18/16							*
+/*----------------------------------------------------------------------
+ * Lab 5 - CPE 315
+ * Jenna Stephens
+ * Vankat Akkinepally
+ * Austin Whaley
  *----------------------------------------------------------------------*/
 
 
@@ -27,6 +26,8 @@ void eff_addr(int pc, int imm_value);
 char type(unsigned int op_code, MIPS ir);
 void jmp_addr(MIPS ir);
 void printReg(MIPS ir, int rs_en, int rt_en, int rd_en);
+void eff_addr_ls(MIPS ir);
+void printRegRS(MIPS ir);
 
 int main(int argc, char *argv[]) {
    FILE *fd;
@@ -102,6 +103,11 @@ int main(int argc, char *argv[]) {
       //if J-Type, print Jump Address
       if (instruct_type == 'j') {
          jmp_addr(curr_instruction);
+      }
+
+      //if Store/load I-Type
+      if (instruct_type == 's') {
+         eff_addr_ls(curr_instruction);
       }     
 
       printf("\n\n");
@@ -237,7 +243,39 @@ char type(unsigned int op_code, MIPS ir) {
    }
 }
 
-//Vinnie is going to be working on print out registers
+
+void eff_addr_ls(MIPS ir) {
+   unsigned int ext_imm = (ir & 0x0000FFFF);
+   ext_imm = ((ext_imm & 0x8000) ? 0xFFFF0000 : 0);
+   printf(", \nEffAddr=R[");
+   printRegRS(ir);
+   printf("] + 0x%08X\n", ext_imm);
+}
+
+void printRegRS(MIPS ir) {
+   int rs = (ir >> 21) & 0x1F;
+
+   int RsReg;
+   if (rs == 0) {
+      printf("$zero", rs);
+   } else if (rs <= 3) {
+      RsReg= rs - 2;
+      printf("$v%d", rs,RsReg);
+   } else if (rs <= 7) {
+      RsReg= rs - 4;
+      printf("$a%d, ", rs,RsReg);
+   } else if (rs <= 15) {
+      RsReg= rs - 8;
+      printf("$t%d", rs,RsReg);
+   } else if (rs <= 23) {
+      RsReg= rs - 16;
+      printf("$s%d", rs,RsReg);
+   } else if (rs == 31) {
+      printf("$ra", rs);
+   }
+   
+}
+
 void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
    int rs = (ir >> 21) & 0x1F;
    int rt = (ir >> 16) & 0x1F;
@@ -260,7 +298,7 @@ void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
          RsReg= rs - 16;
          printf("rs=%d ($s%d), ", rs,RsReg);
       } else if (rs == 31) {
-         printf("rs=%d Return Address Register ", rs);
+         printf("rs=%d ($ra) ", rs);
       }
    }
    int RtReg;
@@ -281,7 +319,7 @@ void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
          RtReg= rt - 16;
          printf("rt=%d ($s%d), ", rt,RtReg);
       } else if (rt == 31) {
-         printf("rt=%d\tReturn Address Register ", rt);
+         printf("rt=%d ($ra) ", rt);
       }
    }
    int RdReg;
@@ -302,7 +340,7 @@ void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
          RdReg= rd - 16;
          printf("rd=%d ($s%d), ", rd,RdReg);
       } else if (rd == 31) {
-         printf("rd=%d\tReturn Address Register ", rd);
+         printf("rd=%d($ra) ", rd);
       }
    }
 }
