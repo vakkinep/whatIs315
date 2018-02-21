@@ -248,18 +248,18 @@ void printReg(MIPS ir) {
       printf("rs: %d ($zero), ", rs);
    } else if (rs <= 3) {
       RsReg= rs - 2;
-      printf("rs: %d\t$v%d ", rs,RsReg);
+      printf("rs: %d ($v%d), ", rs,RsReg);
    } else if (rs <= 7) {
       RsReg= rs - 4;
-      printf("rs: %d\t$a%d ", rs,RsReg);
+      printf("rs: %d ($a%d), ", rs,RsReg);
    } else if (rs <= 15) {
       RsReg= rs - 8;
-      printf("rs: %d\t$t%d ", rs,RsReg);
+      printf("rs: %d ($t%d), ", rs,RsReg);
    } else if (rs <= 23) {
       RsReg= rs - 16;
-      printf("rs: %d\t$s%d ", rs,RsReg);
+      printf("rs: %d ($s%d), ", rs,RsReg);
    } else if (rs == 31) {
-      printf("rs: %d\tReturn Address Register ", rs);
+      printf("rs: %d Return Address Register ", rs);
    }
 
    int RtReg;
@@ -268,16 +268,16 @@ void printReg(MIPS ir) {
       printf("rt: %d ($zero), ", rt);
    } else if (rt <= 3) {
       RtReg= rt - 2;
-      printf("rt: %d\t$v%d ", rt,RtReg);
+      printf("rt: %d ($v%d), ", rt,RtReg);
    } else if (rt <= 7) {
       RtReg= rt - 4;
-      printf("rt: %d\t$a%d ", rt,RtReg);
+      printf("rt: %d ($a%d), ", rt,RtReg);
    } else if (rt <= 15) {
       RtReg= rt - 8;
-      printf("rt: %d\t$t%d ", rt,RtReg);
+      printf("rt: %d ($t%d), ", rt,RtReg);
    } else if (rt <= 23) {
       RtReg= rt - 16;
-      printf("rt: %d\t$s%d ", rt,RtReg);
+      printf("rt: %d ($s%d), ", rt,RtReg);
    } else if (rt == 31) {
       printf("rt: %d\tReturn Address Register ", rt);
    }
@@ -287,16 +287,16 @@ void printReg(MIPS ir) {
       printf("rd: %d ($zero), ", rd);
    } else if (rd <= 3) {
       RdReg= rd - 2;
-      printf("rd: %d\t$v%d ", rd,RdReg);
+      printf("rd: %d ($v%d), ", rd,RdReg);
    } else if (rd <= 7) {
       RdReg= rd - 4;
-      printf("rd: %d\t$a%d ", rd,RdReg);
+      printf("rd: %d ($a%d), ", rd,RdReg);
    } else if (rd <= 15) {
       RdReg= rd - 8;
-      printf("rd: %d\t$t%d ", rd,RdReg);
+      printf("rd: %d ($t%d), ", rd,RdReg);
    } else if (rd <= 23) {
       RdReg= rd - 16;
-      printf("rd: %d\t$s%d ", rd,RdReg);
+      printf("rd: %d ($s%d), ", rd,RdReg);
    } else if (rd == 31) {
       printf("rd: %d\tReturn Address Register ", rd);
    }
