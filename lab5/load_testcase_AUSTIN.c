@@ -24,6 +24,7 @@ void op_code(MIPS ir);
 void shamt(MIPS ir); 
 int imm_val(MIPS ir);
 void eff_addr(int pc, int imm_value);
+void brn_cmp(MIPS ir);
 
 main()
 {
@@ -92,6 +93,7 @@ main()
 //=====================================================================================      
 
       //             -Print out branch compares
+
       //             -Print out bad instruction
       //=============================================================================
       printf("\n\n");
@@ -109,19 +111,37 @@ void op_code(MIPS ir) {
    printf("OpCode = 0x%02X,\t", op_code);
 }
 
+void brn_cmp(MIPS ir) {
+   unsigned int rs, rt;
+   
+   rs = ((ir >> 21) & 0x00000001F);    //Mask all but rs
+   rt = ((ir >> 16) & 0x00000001F);    //Mask all but rt 
+   
+//run it through the register finder
+
+//   printf("Rs=%d (\"%s\"?), Rt=%d (\"%s\"?), ", rs, reg_str(rs), rt, reg_str(rt));
+}
+
 int imm_val(MIPS ir) {
    unsigned int imm_val;
-   
+   unsigned int sign_ext;
+   int sign;
+
    imm_val = (ir & 0x0000FFFF); 
    printf("Immediate Value = 0x%04X,\t", imm_val);
-   return imm_val;
+
+   sign = (imm_val & 0x00008000);
+   if (sign) {
+      sign_ext = (imm_val | 0xFFFF0000);
+   }
+   printf("signext: 0x%08X, (%d)\t", sign_ext, (int) sign_ext);
 }
 
 void shamt(MIPS ir) {
    unsigned int shamt;
    
    shamt = ((ir >> 6) & 0x00000001F);    
-   printf("Shamt = 0x%02X,\t", shamt);
+   printf("Shamt = %d,\t", shamt);
 }
 
 void func_code(MIPS ir) {
