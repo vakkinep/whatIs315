@@ -260,7 +260,7 @@ void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
          RsReg= rs - 16;
          printf("rs=%d ($s%d), ", rs,RsReg);
       } else if (rs == 31) {
-         printf("rs=%d Return Address Register ", rs);
+         printf("rs=%d ($ra) ", rs);
       }
    }
    int RtReg;
@@ -281,7 +281,7 @@ void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
          RtReg= rt - 16;
          printf("rt=%d ($s%d), ", rt,RtReg);
       } else if (rt == 31) {
-         printf("rt=%d\tReturn Address Register ", rt);
+         printf("rt=%d ($ra) ", rt);
       }
    }
    int RdReg;
@@ -302,7 +302,7 @@ void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
          RdReg= rd - 16;
          printf("rd=%d ($s%d), ", rd,RdReg);
       } else if (rd == 31) {
-         printf("rd=%d\tReturn Address Register ", rd);
+         printf("rd=%d ($ra) ", rd);
       }
    }
 }
