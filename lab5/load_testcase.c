@@ -183,7 +183,7 @@ int func_code(MIPS ir) {           //R Types
       case 0x18: printf("R Type, Function=0x%02X (mult)\n", func_code); break;
       case 0x19: printf("R Type, Function=0x%02X (multu)\n", func_code); break;
       default:
-                 printf("0x%08X - Invalid Instruction.\n", ir);
+                 printf("0x%08X - Invalid Instruction.", ir);
                  return 0;
    }
    return 1;
@@ -249,7 +249,7 @@ void eff_addr_ls(MIPS ir) {
    ext_imm = ((ext_imm & 0x8000) ? 0xFFFF0000 : 0);
    printf(", \nEffAddr=R[");
    printRegRS(ir);
-   printf("] + 0x%08X\n", ext_imm);
+   printf("] + 0x%08X", ext_imm);
 }
 
 void printRegRS(MIPS ir) {
