@@ -19,16 +19,11 @@ typedef unsigned int MIPS, *MIPS_PTR;
 MB_HDR mb_hdr;		/* Header area */
 MIPS mem[1024];		/* Room for 4K bytes */
 
-<<<<<<< HEAD
-unsigned int op_code(MIPS ir); 
-void type(unsigned int op_code);
-=======
 void func_code(MIPS ir); 
 void op_code(MIPS ir); 
 void shamt(MIPS ir); 
 int imm_val(MIPS ir);
 void eff_addr(int pc, int imm_value);
->>>>>>> 307ead4b104a92ed600e0a1bf36f8ba048fb987d
 
 main()
 {
@@ -71,23 +66,11 @@ main()
 
    for (i = 0; i<memp; i+=4)	/* i contains byte offset addresses */
    {
-   	  unsigned int op;
       curr_instruction = mem[i/4];
       printf("Instruction@%08X : %08X\n", i, curr_instruction);
       //=============================================================================
       //                         Add code here
       //
-<<<<<<< HEAD
-      //             -Print out type of instruction   (R/I/J?) 
-      //             -Print out Opcode                (HEX?)
-      op = op_code(curr_instruction);
-      type(op);
-      //             -Print out Function Code         (HEX?)
-      //             -Print out registers             (Source/Target/Dest)            
-      //             -Print out immedval              (Sign extended or no)
-      //             -Print out shamt                 (Rshifted and amt)
-      //             -Print out effective address
-=======
       //             -Print out type of instruction   (R/I/J?)                   JENNA 
 
 //=====================================================================================      
@@ -108,7 +91,6 @@ main()
       eff_addr(i, imm_value);
 //=====================================================================================      
 
->>>>>>> 307ead4b104a92ed600e0a1bf36f8ba048fb987d
       //             -Print out branch compares
       //             -Print out bad instruction
       //=============================================================================
@@ -120,7 +102,7 @@ main()
    exit(0);
 }
 
-unsigned int op_code(MIPS ir) {
+void op_code(MIPS ir) {
    unsigned int op_code;
    
    op_code = ((ir >> 26) & 0x00000003F);    //Mask all but opcode
@@ -129,24 +111,17 @@ unsigned int op_code(MIPS ir) {
 
 int imm_val(MIPS ir) {
    unsigned int imm_val;
-   unsigned int sign_ext;
-   int sign;
-
+   
    imm_val = (ir & 0x0000FFFF); 
    printf("Immediate Value = 0x%04X,\t", imm_val);
-
-   sign = (imm_val & 0x00008000);
-   if (sign) {
-      sign_ext = (imm_val | 0xFFFF0000);
-   }
-   printf("signext: 0x%08X, (%d)\t", sign_ext, (int) sign_ext);
+   return imm_val;
 }
 
 void shamt(MIPS ir) {
    unsigned int shamt;
    
    shamt = ((ir >> 6) & 0x00000001F);    
-   printf("Shamt = %d,\t", shamt);
+   printf("Shamt = 0x%02X,\t", shamt);
 }
 
 void func_code(MIPS ir) {
@@ -156,52 +131,9 @@ void func_code(MIPS ir) {
    printf("Function Code = 0x%02X,\t", func_code);
 }
 
-<<<<<<< HEAD
-   printf("OpCode = 0x%02X\n", op_code);
-   return op_code;
-}
-// Helpers:
-//
-// Find type - switch or waterfall if's
-// When found print relevant stuff
-void type(unsigned int op_code) {
-	switch(op_code) {
-		case 0x00: printf("R type\n"); break;
-		case 0x02: printf("J Type (j)\n"); break;
-		case 0x03: printf("J Type (jal)\n"); break;
-		case 0x08: printf("I Type (addi)\n"); break;
-		case 0x09: printf("I Type (addiu)\n"); break;
-		case 0x0C: printf("I Type (andi)\n"); break;
-		case 0x0D: printf("I Type (ori)\n"); break;
-		case 0x0E: printf("I Type (xori)\n"); break;
-		case 0x0A: printf("I Type (slti)\n"); break;
-		case 0x0B: printf("I Type (sltiu)\n"); break;
-		case 0x04: printf("I Type (beq)\n"); break;
-		case 0x05: printf("I Type (bne)\n"); break;
-		case 0x20: printf("I Type (lb)\n"); break;
-		case 0x24: printf("I Type (lbu)\n"); break;
-		case 0x21: printf("I Type (lh)\n"); break;
-		case 0x25: printf("I Type (lhu)\n"); break;
-		case 0x0F: printf("I Type (lui)\n"); break;
-		case 0x23: printf("I Type (lw)\n"); break;
-		case 0x28: printf("I Type (sb)\n"); break;
-		case 0x29: printf("I Type (sh)\n"); break;
-		case 0x2B: printf("I Type (sw)\n"); break;
-		case 0x31: printf("I Type (lwcl)\n"); break;
-		case 0x35: printf("I Type (ldcl)\n"); break;
-		case 0x39: printf("I Type (swcl)\n"); break;
-		case 0x3D: printf("I Type (sdcl)\n"); break;
-		default:
-			printf("I Type\n");
-			break;
-	}
-}
-
-=======
 void eff_addr(int pc, int imm_value) {
    int eff_addr;
 
    eff_addr = pc + imm_value;
    printf("BranchAddr=0x%08X,\t", eff_addr);
 }
->>>>>>> 307ead4b104a92ed600e0a1bf36f8ba048fb987d
