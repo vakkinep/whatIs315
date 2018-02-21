@@ -27,8 +27,7 @@ void eff_addr(int pc, int imm_value);
 char type(unsigned int op_code);
 
 
-main()
-{
+int main(int argc, char **argv) {
 	FILE *fd;
 	int n;
 	int memp;
@@ -131,7 +130,7 @@ int imm_val(MIPS ir) {              //I Types
    	if (sign) {
     	sign_ext = (imm_val | 0xFFFF0000);
    	}
-   	printf("signext: 0x%08X (%d), ", sign_ext, (int) sign_ext);
+   	printf("signext: 0x%08X (%d)", sign_ext, (int) sign_ext);
 	return imm_val;
 }
 
@@ -146,14 +145,45 @@ void func_code(MIPS ir) {           //R Types
 	unsigned int func_code;
 
 	func_code = (ir & 0x0000003F);
-	printf("Function=0x%02X, ", func_code);
+	printf("Function=0x%02X ", func_code);
+	switch (func_code) {
+		case 0x20: printf("(add)\n"); break;
+		case 0x21: printf("(addu)\n"); break;
+		case 0x22: printf("(sub)\n"); break;
+		case 0x23: printf("(subu)\n"); break;
+		case 0x24: printf("(and)\n"); break;
+		case 0x27: printf("(nor)\n"); break;
+		case 0x25: printf("(or)\n"); break;
+		case 0x26: printf("(xor)\n"); break;
+		case 0x00: printf("(sll)\n"); break;
+		case 0x02: printf("(srl)\n"); break;
+		case 0x03: printf("(sra)\n"); break;
+		case 0x04: printf("(sllv)\n"); break;
+		case 0x06: printf("(srlv)\n"); break;
+		case 0x07: printf("(srav)\n"); break;
+		case 0x2A: printf("(slt)\n"); break;
+		case 0x2B: printf("(sltu)\n"); break;
+		case 0x08: printf("(jr)\n"); break;
+		case 0x09: printf("(jalr)\n"); break;
+		case 0x1A: printf("(div)\n"); break;
+		case 0x1B: printf("(divu)\n"); break;
+		case 0x18: printf("(mult)\n"); break;
+		case 0x19: printf("(multu)\n"); break;
+		default:
+			printf("Invalid Instruction\n");
+	}
 }
 
 void eff_addr(int pc, int imm_value) {  //I Types, Branches only
 	int eff_addr;
 
 	eff_addr = pc + imm_value;
-	printf("BranchAddr=0x%08X ", eff_addr);
+	printf(", BranchAddr=0x%08X ", eff_addr);
+}
+
+void jmp_addr(int imm_value) {  //J Types -- Is this right?
+	int jmp_addr = imm_value >> 2;
+	printf("JumpAddr=0x%08X ", jmp_addr);
 }
 
 // Helpers:
@@ -162,7 +192,7 @@ void eff_addr(int pc, int imm_value) {  //I Types, Branches only
 // r: R Type, j: J-Type, i: I Type, b: I Type (branch), s: I Type (load/store)
 char type(unsigned int op_code) {
 	switch(op_code) {
-		case 0x00: printf("R type\n"); return 'r';
+		case 0x00: printf("R type, "); return 'r';
 		case 0x02: printf("J Type (j)\n"); return 'j';
 		case 0x03: printf("J Type (jal)\n"); return 'j';
 		case 0x08: printf("I Type (addi)\n"); return 'i';
