@@ -80,11 +80,11 @@ int main(int argc, char *argv[]) {
 
       opcode = op_code(curr_instruction);		//Print Opcode
       instruct_type = type(opcode, curr_instruction);			//Print instruction type
-      printReg(curr_instruction); //Call in main
 
       //if R-Type
       if (instruct_type == 'r') { 
          if (func_code(curr_instruction)) {			//print function code
+            printReg(curr_instruction);
             shamt(curr_instruction); 			//print shift amount
          }
       }
@@ -237,10 +237,6 @@ char type(unsigned int op_code, MIPS ir) {
    }
 }
 
-
-
-
-
 //Vinnie is going to be working on print out registers
 void printReg(MIPS ir) {
    int rs = (ir >> 21) & 0x1F;
@@ -249,60 +245,60 @@ void printReg(MIPS ir) {
 
    int RsReg;
    if (rs == 0) {
-      printf("rs: %d\n", rs);
+      printf("rs: %d ($zero), ", rs);
    } else if (rs <= 3) {
       RsReg= rs - 2;
-      printf("rs: %d\t$v%d\n", rs,RsReg);
+      printf("rs: %d\t$v%d ", rs,RsReg);
    } else if (rs <= 7) {
       RsReg= rs - 4;
-      printf("rs: %d\t$a%d\n", rs,RsReg);
+      printf("rs: %d\t$a%d ", rs,RsReg);
    } else if (rs <= 15) {
       RsReg= rs - 8;
-      printf("rs: %d\t$t%d\n", rs,RsReg);
+      printf("rs: %d\t$t%d ", rs,RsReg);
    } else if (rs <= 23) {
       RsReg= rs - 16;
-      printf("rs: %d\t$s%d\n", rs,RsReg);
+      printf("rs: %d\t$s%d ", rs,RsReg);
    } else if (rs == 31) {
-      printf("rs: %d\tReturn Address Register\n", rs);
+      printf("rs: %d\tReturn Address Register ", rs);
    }
 
    int RtReg;
 
    if (rt == 0) {
-      printf("rt: %d\n", rt);
+      printf("rt: %d ($zero), ", rt);
    } else if (rt <= 3) {
       RtReg= rt - 2;
-      printf("rt: %d\t$v%d\n", rt,RtReg);
+      printf("rt: %d\t$v%d ", rt,RtReg);
    } else if (rt <= 7) {
       RtReg= rt - 4;
-      printf("rt: %d\t$a%d\n", rt,RtReg);
+      printf("rt: %d\t$a%d ", rt,RtReg);
    } else if (rt <= 15) {
       RtReg= rt - 8;
-      printf("rt: %d\t$t%d\n", rt,RtReg);
+      printf("rt: %d\t$t%d ", rt,RtReg);
    } else if (rt <= 23) {
       RtReg= rt - 16;
-      printf("rt: %d\t$s%d\n", rt,RtReg);
+      printf("rt: %d\t$s%d ", rt,RtReg);
    } else if (rt == 31) {
-      printf("rt: %d\tReturn Address Register\n", rt);
+      printf("rt: %d\tReturn Address Register ", rt);
    }
    int RdReg;
 
    if (rd == 0) {
-      printf("rd: %d\n", rd);
+      printf("rd: %d ($zero), ", rd);
    } else if (rd <= 3) {
       RdReg= rd - 2;
-      printf("rd: %d\t$v%d\n", rd,RdReg);
+      printf("rd: %d\t$v%d ", rd,RdReg);
    } else if (rd <= 7) {
       RdReg= rd - 4;
-      printf("rd: %d\t$a%d\n", rd,RdReg);
+      printf("rd: %d\t$a%d ", rd,RdReg);
    } else if (rd <= 15) {
       RdReg= rd - 8;
-      printf("rd: %d\t$t%d\n", rd,RdReg);
+      printf("rd: %d\t$t%d ", rd,RdReg);
    } else if (rd <= 23) {
       RdReg= rd - 16;
-      printf("rd: %d\t$s%d\n", rd,RdReg);
+      printf("rd: %d\t$s%d ", rd,RdReg);
    } else if (rd == 31) {
-      printf("rd: %d\tReturn Address Register\n", rd);
+      printf("rd: %d\tReturn Address Register ", rd);
    }
 }
 
