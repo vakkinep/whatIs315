@@ -19,12 +19,12 @@ typedef unsigned int MIPS, *MIPS_PTR;
 MB_HDR mb_hdr;		/* Header area */
 MIPS mem[1024];		/* Room for 4K bytes */
 
-void func_code(MIPS ir); 
+int func_code(MIPS ir); 
 unsigned int op_code(MIPS ir); 
 void shamt(MIPS ir); 
 int imm_val(MIPS ir);
 void eff_addr(int pc, int imm_value);
-char type(unsigned int op_code);
+char type(unsigned int op_code, MIPS ir);
 void jmp_addr(MIPS ir);
 
 
@@ -78,12 +78,13 @@ int main(int argc, char *argv[]) {
 		printf("@PC=%08X, ", i);
          
 		opcode = op_code(curr_instruction);		//Print Opcode
-		instruct_type = type(opcode);			//Print instruction type
+		instruct_type = type(opcode, curr_instruction);			//Print instruction type
 
 		//if R-Type
         if (instruct_type == 'r') { 
-	       func_code(curr_instruction);			//print function code
-	       shamt(curr_instruction); 			//print shift amount
+	        if (func_code(curr_instruction)) {			//print function code
+	       		shamt(curr_instruction); 			//print shift amount
+	    	}
 	    }
 	   
    		//if I-Type, print immediate value
@@ -118,7 +119,7 @@ unsigned int op_code(MIPS ir) {
 	unsigned int op_code;
 
     op_code = ((ir >> 26) & 0x00000003F);    //Mask all but opcode
-    printf("OpCode=0x%02X, ", op_code);
+    //printf("OpCode=0x%02X, ", op_code);
     return op_code;
 }
 
@@ -145,37 +146,39 @@ void shamt(MIPS ir) {               //R Types
 	printf("shamt=0x%02X ", shamt);
 }
 
-void func_code(MIPS ir) {           //R Types
+int func_code(MIPS ir) {           //R Types
 	unsigned int func_code;
 
 	func_code = (ir & 0x0000003F);
-	printf("Function=0x%02X ", func_code);
+	
 	switch (func_code) {
-		case 0x20: printf("(add)\n"); break;
-		case 0x21: printf("(addu)\n"); break;
-		case 0x22: printf("(sub)\n"); break;
-		case 0x23: printf("(subu)\n"); break;
-		case 0x24: printf("(and)\n"); break;
-		case 0x27: printf("(nor)\n"); break;
-		case 0x25: printf("(or)\n"); break;
-		case 0x26: printf("(xor)\n"); break;
-		case 0x00: printf("(sll)\n"); break;
-		case 0x02: printf("(srl)\n"); break;
-		case 0x03: printf("(sra)\n"); break;
-		case 0x04: printf("(sllv)\n"); break;
-		case 0x06: printf("(srlv)\n"); break;
-		case 0x07: printf("(srav)\n"); break;
-		case 0x2A: printf("(slt)\n"); break;
-		case 0x2B: printf("(sltu)\n"); break;
-		case 0x08: printf("(jr)\n"); break;
-		case 0x09: printf("(jalr)\n"); break;
-		case 0x1A: printf("(div)\n"); break;
-		case 0x1B: printf("(divu)\n"); break;
-		case 0x18: printf("(mult)\n"); break;
-		case 0x19: printf("(multu)\n"); break;
+		case 0x20: printf("R Type, Function=0x%02X (add)\n", func_code); break;
+		case 0x21: printf("R Type, Function=0x%02X (addu)\n", func_code); break;
+		case 0x22: printf("R Type, Function=0x%02X (sub)\n", func_code); break;
+		case 0x23: printf("R Type, Function=0x%02X (subu)\n", func_code); break;
+		case 0x24: printf("R Type, Function=0x%02X (and)\n", func_code); break;
+		case 0x27: printf("R Type, Function=0x%02X (nor)\n", func_code); break;
+		case 0x25: printf("R Type, Function=0x%02X (or)\n", func_code); break;
+		case 0x26: printf("R Type, Function=0x%02X (xor)\n", func_code); break;
+		case 0x00: printf("R Type, Function=0x%02X (sll)\n", func_code); break;
+		case 0x02: printf("R Type, Function=0x%02X (srl)\n", func_code); break;
+		case 0x03: printf("R Type, Function=0x%02X (sra)\n", func_code); break;
+		case 0x04: printf("R Type, Function=0x%02X (sllv)\n", func_code); break;
+		case 0x06: printf("R Type, Function=0x%02X (srlv)\n", func_code); break;
+		case 0x07: printf("R Type, Function=0x%02X (srav)\n", func_code); break;
+		case 0x2A: printf("R Type, Function=0x%02X (slt)\n", func_code); break;
+		case 0x2B: printf("R Type, Function=0x%02X (sltu)\n", func_code); break;
+		case 0x08: printf("R Type, Function=0x%02X (jr)\n", func_code); break;
+		case 0x09: printf("R Type, Function=0x%02X (jalr)\n", func_code); break;
+		case 0x1A: printf("R Type, Function=0x%02X (div)\n", func_code); break;
+		case 0x1B: printf("R Type, Function=0x%02X (divu)\n", func_code); break;
+		case 0x18: printf("R Type, Function=0x%02X (mult)\n", func_code); break;
+		case 0x19: printf("R Type, Function=0x%02X (multu)\n", func_code); break;
 		default:
-			printf("Invalid Instruction\n");
+			printf("0x%08X - Invalid Instruction.\n", ir);
+			return 0;
 	}
+	return 1;
 }
 
 void eff_addr(int pc, int imm_value) {  //I Types, Branches only
@@ -199,35 +202,35 @@ void jmp_addr(MIPS ir) {  //J Types
 //
 // Find Type:
 // r: R Type, j: J-Type, i: I Type, b: I Type (branch), s: I Type (load/store)
-char type(unsigned int op_code) {
+char type(unsigned int op_code, MIPS ir) {
 	switch(op_code) {
-		case 0x00: printf("R type, "); return 'r';
-		case 0x02: printf("J Type (j), "); return 'j';
-		case 0x03: printf("J Type (jal), "); return 'j';
-		case 0x08: printf("I Type (addi)\n"); return 'i';
-		case 0x09: printf("I Type (addiu)\n"); return 'i';
-		case 0x0C: printf("I Type (andi)\n"); return 'i';
-		case 0x0D: printf("I Type (ori)\n"); return 'i';
-		case 0x0E: printf("I Type (xori)\n"); return 'i';
-		case 0x0A: printf("I Type (slti)\n"); return 'i';
-		case 0x0B: printf("I Type (sltiu)\n"); return 'i';
-		case 0x04: printf("I Type (beq)\n"); return 'b';
-		case 0x05: printf("I Type (bne)\n"); return 'b';
-		case 0x20: printf("I Type (lb)\n"); return 's';
-		case 0x24: printf("I Type (lbu)\n"); return 's';
-		case 0x21: printf("I Type (lh)\n"); return 's';
-		case 0x25: printf("I Type (lhu)\n"); return 's';
-		case 0x0F: printf("I Type (lui)\n"); return 's';
-		case 0x23: printf("I Type (lw)\n"); return 's';
-		case 0x28: printf("I Type (sb)\n"); return 's';
-		case 0x29: printf("I Type (sh)\n"); return 's';
-		case 0x2B: printf("I Type (sw)\n"); return 's';
-		case 0x31: printf("I Type (lwcl)\n"); return 's';
-		case 0x35: printf("I Type (ldcl)\n"); return 's';
-		case 0x39: printf("I Type (swcl)\n"); return 's';
-		case 0x3D: printf("I Type (sdcl)\n"); return 's';
+		case 0x00: return 'r';
+		case 0x02: printf("OpCode=0x%02X, J Type (j), ", op_code); return 'j';
+		case 0x03: printf("OpCode=0x%02X, J Type (jal), ", op_code); return 'j';
+		case 0x08: printf("OpCode=0x%02X, I Type (addi)\n", op_code); return 'i';
+		case 0x09: printf("OpCode=0x%02X, I Type (addiu)\n", op_code); return 'i';
+		case 0x0C: printf("OpCode=0x%02X, I Type (andi)\n", op_code); return 'i';
+		case 0x0D: printf("OpCode=0x%02X, I Type (ori)\n", op_code); return 'i';
+		case 0x0E: printf("OpCode=0x%02X, I Type (xori)\n", op_code); return 'i';
+		case 0x0A: printf("OpCode=0x%02X, I Type (slti)\n", op_code); return 'i';
+		case 0x0B: printf("OpCode=0x%02X, I Type (sltiu)\n", op_code); return 'i';
+		case 0x04: printf("OpCode=0x%02X, I Type (beq)\n", op_code); return 'b';
+		case 0x05: printf("OpCode=0x%02X, I Type (bne)\n", op_code); return 'b';
+		case 0x20: printf("OpCode=0x%02X, I Type (lb)\n", op_code); return 's';
+		case 0x24: printf("OpCode=0x%02X, I Type (lbu)\n", op_code); return 's';
+		case 0x21: printf("OpCode=0x%02X, I Type (lh)\n", op_code); return 's';
+		case 0x25: printf("OpCode=0x%02X, I Type (lhu)\n", op_code); return 's';
+		case 0x0F: printf("OpCode=0x%02X, I Type (lui)\n", op_code); return 's';
+		case 0x23: printf("OpCode=0x%02X, I Type (lw)\n", op_code); return 's';
+		case 0x28: printf("OpCode=0x%02X, I Type (sb)\n", op_code); return 's';
+		case 0x29: printf("OpCode=0x%02X, I Type (sh)\n", op_code); return 's';
+		case 0x2B: printf("OpCode=0x%02X, I Type (sw)\n", op_code); return 's';
+		case 0x31: printf("OpCode=0x%02X, I Type (lwcl)\n", op_code); return 's';
+		case 0x35: printf("OpCode=0x%02X, I Type (ldcl)\n", op_code); return 's';
+		case 0x39: printf("OpCode=0x%02X, I Type (swcl)\n", op_code); return 's';
+		case 0x3D: printf("OpCode=0x%02X, I Type (sdcl)\n", op_code); return 's';
 		default:
-		printf("Invalid Instruction\n");
-		return '0';
+			printf("0x%08X - Invalid Instruction.\n", ir);
+			return '0';
 	}
 }
