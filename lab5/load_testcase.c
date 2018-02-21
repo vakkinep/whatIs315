@@ -111,17 +111,24 @@ void op_code(MIPS ir) {
 
 int imm_val(MIPS ir) {
    unsigned int imm_val;
-   
+   unsigned int sign_ext;
+   int sign;
+
    imm_val = (ir & 0x0000FFFF); 
    printf("Immediate Value = 0x%04X,\t", imm_val);
-   return imm_val;
+
+   sign = (imm_val & 0x00008000);
+   if (sign) {
+      sign_ext = (imm_val | 0xFFFF0000);
+   }
+   printf("signext: 0x%08X, (%d)\t", sign_ext, (int) sign_ext);
 }
 
 void shamt(MIPS ir) {
    unsigned int shamt;
    
    shamt = ((ir >> 6) & 0x00000001F);    
-   printf("Shamt = 0x%02X,\t", shamt);
+   printf("Shamt = %d,\t", shamt);
 }
 
 void func_code(MIPS ir) {
