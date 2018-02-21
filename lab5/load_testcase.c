@@ -25,16 +25,24 @@ void shamt(MIPS ir);
 int imm_val(MIPS ir);
 void eff_addr(int pc, int imm_value);
 char type(unsigned int op_code);
+void jmp_addr(MIPS ir);
 
 
-int main(int argc, char **argv) {
+int main(int argc, char *argv[]) {
 	FILE *fd;
 	int n;
 	int memp;
 	int i;
 	int curr_instruction;
 	int imm_value;
-   char filename[] = "testcase1.mb";	/* This is the filename to be loaded */
+    char *filename;	/* This is the filename to be loaded */
+
+    if (argc <= 1) {
+    	printf("Missing File name - quitting.\n");
+    	exit(1);
+    }
+
+    filename = argv[1];
 
    /* format the MIPS Binary header */
 
@@ -63,44 +71,35 @@ int main(int argc, char **argv) {
 		fclose(fd);
 
 
-   /* ok, now dump out the instructions loaded: */
-
    for (i = 0; i<memp; i+=4) {	/* i contains byte offset addresses */
 		unsigned int opcode;
 		char instruct_type;
 		curr_instruction = mem[i/4];
 		printf("@PC=%08X, ", i);
-    //=============================================================================
-    //                         Add code here
-    //
+         
+		opcode = op_code(curr_instruction);		//Print Opcode
+		instruct_type = type(opcode);			//Print instruction type
 
-	//================================================================================      
-    //              -Print out Opcode                 (HEX?)                     AUSTIN
-		opcode = op_code(curr_instruction);
-	//			  -Print out type of instruction      (R/I/J?)                   JENNA 
-		instruct_type = type(opcode);
-	//             -Print out Function Code           (HEX?)                     AUSTIN
+		//if R-Type
         if (instruct_type == 'r') { 
-	       func_code(curr_instruction); 
-        }
-	//=================================================================================      
-
-    //             -Print out registers                (Source/Target/Dest)     VINNY            
-
-    //=================================================================================   
-    //             -Print out immedval                 (Sign extended or no)    AUSTIN
+	       func_code(curr_instruction);			//print function code
+	       shamt(curr_instruction); 			//print shift amount
+	    }
+	   
+   		//if I-Type, print immediate value
 		if (instruct_type == 'i'|| instruct_type == 'b' || instruct_type == 's') {
 			imm_value = imm_val(curr_instruction);
 		}
-    //             -Print out shamt                    (Rshifted and amt)       AUSTIN
-		if (instruct_type == 'r') {
-           shamt(curr_instruction);
-        }
-    //             -Print out effective address                                 AUSTIN
+   		
+   		//if I-Type (Branch), print branch address
 		if (instruct_type == 'b') {                     
 			eff_addr(i, imm_value);
 		}
-//=====================================================================================      
+
+		//if J-Type, print Jump Address
+		if (instruct_type == 'j') {
+			jmp_addr(curr_instruction);
+		}     
 
 		printf("\n\n");
 	}
@@ -109,6 +108,11 @@ int main(int argc, char **argv) {
 
 	exit(0);
 }
+
+/************************************************************************************************
+  Helper functions
+
+ ************************************************************************************************/
 
 unsigned int op_code(MIPS ir) {
 	unsigned int op_code;
@@ -181,8 +185,13 @@ void eff_addr(int pc, int imm_value) {  //I Types, Branches only
 	printf(", BranchAddr=0x%08X ", eff_addr);
 }
 
-void jmp_addr(int imm_value) {  //J Types -- Is this right?
-	int jmp_addr = imm_value >> 2;
+void jmp_addr(MIPS ir) {  //J Types
+	unsigned int jmp_addr;
+
+	jmp_addr = (ir & 0x03FFFFFF);
+	printf("addr=0x%06X \n", jmp_addr);
+
+	jmp_addr <<= 2;	
 	printf("JumpAddr=0x%08X ", jmp_addr);
 }
 
@@ -193,8 +202,8 @@ void jmp_addr(int imm_value) {  //J Types -- Is this right?
 char type(unsigned int op_code) {
 	switch(op_code) {
 		case 0x00: printf("R type, "); return 'r';
-		case 0x02: printf("J Type (j)\n"); return 'j';
-		case 0x03: printf("J Type (jal)\n"); return 'j';
+		case 0x02: printf("J Type (j), "); return 'j';
+		case 0x03: printf("J Type (jal), "); return 'j';
 		case 0x08: printf("I Type (addi)\n"); return 'i';
 		case 0x09: printf("I Type (addiu)\n"); return 'i';
 		case 0x0C: printf("I Type (andi)\n"); return 'i';
