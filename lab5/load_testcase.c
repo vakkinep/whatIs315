@@ -340,7 +340,11 @@ void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
          RdReg= rd - 16;
          printf("rd=%d ($s%d), ", rd,RdReg);
       } else if (rd == 31) {
+<<<<<<< HEAD
          printf("rd=%d($ra) ", rd);
+=======
+         printf("rd=%d ($ra) ", rd);
+>>>>>>> e98a40a063390e6cb6e05df77fb4f4b548f52405
       }
    }
 }
