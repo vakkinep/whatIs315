@@ -9,83 +9,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "readInstructions.h"
+#include "startChecks.h"
 #include "mips_asm_header.h"
 
-
-typedef unsigned int MIPS, *MIPS_PTR;
-
-MB_HDR mb_hdr;		/* Header area */
-MIPS mem[1024];		/* Room for 4K bytes */
-
-int func_code(MIPS ir); 
-unsigned int op_code(MIPS ir); 
-void shamt(MIPS ir); 
-int imm_val(MIPS ir);
-void eff_addr(int pc, int imm_value);
-char type(unsigned int op_code, MIPS ir);
-void jmp_addr(MIPS ir);
-void printReg(MIPS ir, int rs_en, int rt_en, int rd_en);
-void eff_addr_ls(MIPS ir);
-void printRegRS(MIPS ir);
+//============GLOBAL VARIABLES
+MIPS mem[1024];	                                                       	         /* Room for 4K bytes */
 
 int main(int argc, char *argv[]) {
-   FILE *fd;
-   int n;
-   int memp;
-   int i;
+   int memp;                                                                     //Size of pulled instructions
+    
+   checkInputs(argc, argv);
+   memp = checkFile(argv, mem, sizeof(mem));
+   readInstructions(memp);
+}
+
+void readInstructions(int memp) {
    int curr_instruction;
    int imm_value;
-   char *filename;	/* This is the filename to be loaded */
+   unsigned int opcode;
+   char instruct_type;
+   int i;
+   
 
-   if (argc <= 1) {
-      printf("Missing File name - quitting.\n");
-      exit(1);
-   }
-
-   filename = argv[1];
-
-   /* format the MIPS Binary header */
-
-   fd = fopen(filename, "rb");
-   if (fd == NULL) { printf("\nCouldn't load test case - quitting.\n"); exit(99); }
-
-   memp = 0;		/* This is the memory pointer, a byte offset */
-
-   /* read the header and verify it. */
-   fread((void *) &mb_hdr, sizeof(mb_hdr), 1, fd);
-   if (! strcmp(mb_hdr.signature, "~MB")==0)
-   { printf("\nThis isn't really a mips_asm binary file - quitting.\n"); exit(98); }
-
-   printf("\nInput file: %s \n\n", filename, mb_hdr.size);
-
-   /* read the binary code a word at a time */
-
-   do {
-      n = fread((void *) &mem[memp/4], 4, 1, fd); /* note div/4 to make word index */
-      if (n) 
-         memp += 4;	/* Increment byte pointer by size of instr */
-      else
-         break;       
-   } while (memp < sizeof(mem)) ;
-
-   fclose(fd);
-
-
-   for (i = 0; i<memp; i+=4) {	/* i contains byte offset addresses */
-      unsigned int opcode;
-      char instruct_type;
+   for (i = 0; i<memp; i+=4) {	                                                 /* i contains byte offset addresses */
       curr_instruction = mem[i/4];
       printf("@PC=%08X, ", i);
 
-      opcode = op_code(curr_instruction);		//Print Opcode
-      instruct_type = type(opcode, curr_instruction);			//Print instruction type
+      opcode = op_code(curr_instruction);		                         //Print Opcode
+      instruct_type = type(opcode, curr_instruction);			         //Print instruction type
 
       //if R-Type
       if (instruct_type == 'r') { 
-         if (func_code(curr_instruction)) {			//print function code
+         if (func_code(curr_instruction)) {			                 //print function code
             printReg(curr_instruction, 1, 1, 1);
-            shamt(curr_instruction); 			//print shift amount
+            shamt(curr_instruction); 			                         //print shift amount
          }
       }
 
@@ -126,12 +84,11 @@ int main(int argc, char *argv[]) {
 unsigned int op_code(MIPS ir) {
    unsigned int op_code;
 
-   op_code = ((ir >> 26) & 0x00000003F);    //Mask all but opcode
-   //printf("OpCode=0x%02X, ", op_code);
+   op_code = ((ir >> 26) & 0x00000003F);                                         //Mask all but opcode
    return op_code;
 }
 
-int imm_val(MIPS ir) {              //I Types
+int imm_val(MIPS ir) {                                                           //I Types
    unsigned int imm_val;
    unsigned int sign_ext;
    int sign;
@@ -147,14 +104,14 @@ int imm_val(MIPS ir) {              //I Types
    return imm_val;
 }
 
-void shamt(MIPS ir) {               //R Types
+void shamt(MIPS ir) {                                                            //R Types
    unsigned int shamt;
 
    shamt = ((ir >> 6) & 0x00000001F);    
    printf("shamt=0x%02X ", shamt);
 }
 
-int func_code(MIPS ir) {           //R Types
+int func_code(MIPS ir) {                                                         //R Types
    unsigned int func_code;
 
    func_code = (ir & 0x0000003F);
@@ -189,14 +146,14 @@ int func_code(MIPS ir) {           //R Types
    return 1;
 }
 
-void eff_addr(int pc, int imm_value) {  //I Types, Branches only
+void eff_addr(int pc, int imm_value) {                                           //I Types, Branches only
    int eff_addr;
 
    eff_addr = pc + imm_value;
    printf(", BranchAddr=0x%08X ", eff_addr);
 }
 
-void jmp_addr(MIPS ir) {  //J Types
+void jmp_addr(MIPS ir) {                                                         //J Types
    unsigned int jmp_addr;
 
    jmp_addr = (ir & 0x03FFFFFF);
@@ -206,10 +163,6 @@ void jmp_addr(MIPS ir) {  //J Types
    printf("JumpAddr=0x%08X ", jmp_addr);
 }
 
-// Helpers:
-//
-// Find Type:
-// r: R Type, j: J-Type, i: I Type, b: I Type (branch), s: I Type (load/store)
 char type(unsigned int op_code, MIPS ir) {
    switch(op_code) {
       case 0x00: return 'r';
@@ -273,7 +226,7 @@ void printRegRS(MIPS ir) {
    } else if (rs == 31) {
       printf("$ra", rs);
    }
-   
+
 }
 
 void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
