@@ -1,0 +1,54 @@
+
+Input file: testcase2.mb 
+
+@PC=00000000, 0x00001234 - Invalid Instruction.
+
+@PC=00000004, 0x00001111 - Invalid Instruction.
+
+@PC=00000008, OpCode=0x23, I Type (lw)
+rs=0 ($zero), rt=8 ($t0), Imm=0x0000, signext: 0x00000000 (0), 
+EffAddr=R[$zero] + 0x00000000
+
+@PC=0000000C, OpCode=0x23, I Type (lw)
+rs=0 ($zero), rt=9 ($t1), Imm=0x0004, signext: 0x00000000 (0), 
+EffAddr=R[$zero] + 0x00000000
+
+@PC=00000010, OpCode=0x03, J Type (jal), addr=0x00000F 
+JumpAddr=0x0000003C 
+
+@PC=00000014, OpCode=0x08, I Type (addi)
+rs=0 ($zero), rt=14 ($t6), Imm=0x0004, signext: 0x00000000 (0)
+
+@PC=00000018, OpCode=0x05, I Type (bne)
+rs=14 ($t6), rt=0 ($zero), Imm=0x0005, signext: 0x0000000E (14), BranchAddr=0x0000001D 
+
+@PC=0000001C, OpCode=0x20, I Type (lb)
+rs=0 ($zero), rt=8 ($t0), Imm=0x0000, signext: 0x00000000 (0), 
+EffAddr=R[$zero] + 0x00000000
+
+@PC=00000020, OpCode=0x04, I Type (beq)
+rs=8 ($t0), rt=0 ($zero), Imm=0x0003, signext: 0x00000008 (8), BranchAddr=0x00000023 
+
+@PC=00000024, R Type, Function=0x25 (or)
+rs=0 ($zero), rt=2 ($v0), rd=8 ($t0), shamt=0x00 
+
+@PC=00000028, OpCode=0x0D, I Type (ori)
+rs=0 ($zero), rt=2 ($v0), Imm=0x000A, signext: 0x00000000 (0)
+
+@PC=0000002C, 0x0000000C - Invalid Instruction.
+
+@PC=00000030, R Type, Function=0x25 (or)
+rs=0 ($zero), rt=2 ($v0), rd=8 ($t0), shamt=0x00 
+
+@PC=00000034, OpCode=0x0D, I Type (ori)
+rs=0 ($zero), rt=2 ($v0), Imm=0x000A, signext: 0x00000000 (0)
+
+@PC=00000038, 0x0000000C - Invalid Instruction.
+
+@PC=0000003C, R Type, Function=0x21 (addu)
+rs=8 ($t0), rt=9 ($t1), rd=2 ($v0), shamt=0x00 
+
+@PC=00000040, R Type, Function=0x08 (jr)
+rs=31 ($ra) rt=0 ($zero), rd=0 ($zero), shamt=0x00 
+
+

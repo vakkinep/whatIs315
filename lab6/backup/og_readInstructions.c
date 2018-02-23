@@ -29,7 +29,7 @@ MIPS mem[1024];	                                                       	        
 
 int main(int argc, char *argv[]) {
    int memp;                                                                     //Size of pulled instructions
-
+    
    checkInputs(argc, argv);
    memp = checkFile(argv, mem, sizeof(mem));
    readInstructions(memp);
@@ -37,50 +37,52 @@ int main(int argc, char *argv[]) {
 
 void readInstructions(int memp) {
    int curr_instruction;
-   INST instruct;
+   int imm_value;
+   unsigned int opcode;
+   char instruct_type;
    int i;
-
+   
 
    for (i = 0; i<memp; i+=4) {	                                                 /* i contains byte offset addresses */
       curr_instruction = mem[i/4];
       printf("@PC=%08X, ", i);
 
-      instruct.opcode = op_code(curr_instruction);		                         //Print Opcode
-      instruct.type = type(opcode, curr_instruction);			         //Print instruction type
+      opcode = op_code(curr_instruction);		                         //Print Opcode
+      instruct_type = type(opcode, curr_instruction);			         //Print instruction type
 
       //if R-Type
-      if (instruct.type == 'r') { 
-         instruct.func_code = func_code(curr_instruction);
-         if (instruct.func_code) {			                 //print function code
-            instruct.rs = reg_s(curr_instruction);
-            instruct.rt = reg_t(curr_instruction);
-            instruct.rd = reg_d(curr_instruction);
-            instruct.shamt = shamt(curr_instruction); 			                         //print shift amount
+      if (instruct_type == 'r') { 
+         if (func_code(curr_instruction)) {			                 //print function code
+            printReg(curr_instruction, 1, 1, 1);
+            shamt(curr_instruction); 			                         //print shift amount
          }
       }
 
       //if I-Type, print immediate value
-      if (instruct.type == 'i'|| instruct_type == 'b' || instruct_type == 's') {
-         instruct.rs = reg_s(curr_instruction);
-         instruct.rt = reg_t(curr_instruction);
-         instruct.imm_value = imm_val(curr_instruction);
+      if (instruct_type == 'i'|| instruct_type == 'b' || instruct_type == 's') {
+         printReg(curr_instruction, 1, 1, 0);
+         imm_value = imm_val(curr_instruction);
       }
 
       //if I-Type (Branch), print branch address
-      if (instruct.type == 'b') {
-         eff_addr(i, instruct.imm_value);
+      if (instruct_type == 'b') {                     
+         eff_addr(i, imm_value);
       }
 
       //if J-Type, print Jump Address
-      if (instruct.type == 'j') {
-         instruct.jmp_addr = jmp_addr(curr_instruction);
+      if (instruct_type == 'j') {
+         jmp_addr(curr_instruction);
       }
 
       //if Store/load I-Type
-      if (instruct.type == 's') {
+      if (instruct_type == 's') {
          eff_addr_ls(curr_instruction);
       }     
+
+      printf("\n\n");
    }
+
+   printf("\n");
 
    exit(0);
 }
@@ -174,7 +176,7 @@ void jmp_addr(MIPS ir) {                                                        
 
 char type(unsigned int op_code, MIPS ir) {
    switch(op_code) {
-      case 0x00: return 'n';
+      case 0x00: return 'r';
       case 0x02: printf("OpCode=0x%02X, J Type (j), ", op_code); return 'j';
       case 0x03: printf("OpCode=0x%02X, J Type (jal), ", op_code); return 'j';
       case 0x08: printf("OpCode=0x%02X, I Type (addi)\n", op_code); return 'i';
@@ -309,11 +311,10 @@ void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
 
 void printValues(INST instruction) {                                             // Prints the instruction values
    switch (instruction.type) {
-      case ('r') : printf("values\n"); break;                                    //r-type
-      case ('i') : break;                                                        //i-type
-      case ('b') : break;                                                        //brn inst
-      case ('s') : break;                                                        //ld/store
-      case ('j') : break;                                                        //j-type
-      case ('n') : break;                                                        //nop
+      case ('r') : printf("values\n"); break;
+      case ('i') : break;
+      case ('b') : break;
+      case ('s') : break;
+      case ('j') : break;
    }
 }
