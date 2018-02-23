@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "readInstructions.h"
+#include "readInstructions_AUSTIN.h"
 #include "startChecks.h"
 #include "mips_asm_header.h"
 
@@ -298,3 +298,12 @@ void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
    }
 }
 
+void printValues(INST instruction) {                                             // Prints the instruction values
+   switch (instruction.type) {
+      case ('r') : printf("values\n"); break;
+      case ('i') : break;
+      case ('b') : break;
+      case ('s') : break;
+      case ('j') : break;
+   }
+}
