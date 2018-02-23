@@ -113,11 +113,11 @@ int imm_val(MIPS ir) {                                                          
    return imm_val;
 }
 
-void shamt(MIPS ir) {                                                            //R Types
+unsigned int shamt(MIPS ir) {                                                            //R Types
    unsigned int shamt;
 
    shamt = ((ir >> 6) & 0x00000001F);    
-   printf("shamt=0x%02X ", shamt);
+   return shamt;
 }
 
 int func_code(MIPS ir) {                                                         //R Types
@@ -155,21 +155,20 @@ int func_code(MIPS ir) {                                                        
    return 1;
 }
 
-void eff_addr(int pc, int imm_value) {                                           //I Types, Branches only
+int eff_addr(int pc, int imm_value) {                                           //I Types, Branches only
    int eff_addr;
 
    eff_addr = pc + imm_value;
-   printf(", BranchAddr=0x%08X ", eff_addr);
+   return eff_addr;
 }
-
-void jmp_addr(MIPS ir) {                                                         //J Types
+unsigned int jmp_addr(MIPS ir) {                                                         //J Types
    unsigned int jmp_addr;
 
    jmp_addr = (ir & 0x03FFFFFF);
    printf("addr=0x%06X \n", jmp_addr);
 
    jmp_addr <<= 2;	
-   printf("JumpAddr=0x%08X ", jmp_addr);
+   return jmp_addr;
 }
 
 char type(unsigned int op_code, MIPS ir) {
@@ -206,12 +205,13 @@ char type(unsigned int op_code, MIPS ir) {
 }
 
 
-void eff_addr_ls(MIPS ir) {
+unsigned int eff_addr_ls(MIPS ir) {
    unsigned int ext_imm = (ir & 0x0000FFFF);
    ext_imm = ((ext_imm & 0x8000) ? 0xFFFF0000 : 0);
-   printf(", \nEffAddr=R[");
-   printRegRS(ir);
-   printf("] + 0x%08X", ext_imm);
+   //printf(", \nEffAddr=R[");
+   //printRegRS(ir);
+   //printf("] + 0x%08X", ext_imm);
+   return ext_imm;
 }
 
 void printRegRS(MIPS ir) {
