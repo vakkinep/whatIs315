@@ -7,14 +7,14 @@
 
 typedef struct INSTRUCTION {
    char type;
-   int  opcode;
-   int  rs;
-   int  rt;
-   int  rd;
-   int  shamt;
-   int  func_code;
+   unsigned int  opcode;
+   unsigned int  rs;
+   unsigned int  rt;
+   unsigned int  rd;
+   unsigned int  shamt;
+   unsigned int  func_code;
    int  immed;
-   int  jmp_addr;
+   unsigned int  jmp_addr;
 } INST;
 
 #include <stdio.h>
@@ -207,11 +207,10 @@ char type(unsigned int op_code, MIPS ir) {
 
 unsigned int eff_addr_ls(MIPS ir) {
    unsigned int ext_imm = (ir & 0x0000FFFF);
-   ext_imm = ((ext_imm & 0x8000) ? 0xFFFF0000 : 0);
-   //printf(", \nEffAddr=R[");
-   //printRegRS(ir);
-   //printf("] + 0x%08X", ext_imm);
-   return ext_imm;
+   ext_imm |= ((ext_imm & 0x8000) ? 0xFFFF0000 : 0);
+   printf(", \nEffAddr=R[");
+   printRegRS(ir);
+   printf("] + 0x%08X", ext_imm);
 }
 
 void printRegRS(MIPS ir) {
