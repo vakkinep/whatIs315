@@ -6,6 +6,6 @@
 
 /*----------Prototypes---------*/
 void checkInputs(int argc, char *argv[]);
-int checkFiles(char *argv[], MIPS* mem, size_t mem_size);
+int checkFile(char *argv[], MIPS* mem, size_t mem_size);
 
 #endif

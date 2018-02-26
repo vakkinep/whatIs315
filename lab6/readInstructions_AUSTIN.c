@@ -243,13 +243,13 @@ int reg_s(MIPS ir) {
    return rs;
 }
 
-int res_t(MIPS ir) {
+int reg_t(MIPS ir) {
    int rt = (ir >> 16) & 0x1F;
    printReg(rt, "rt");
    return rt;
 }
 
-int res_d(MIPS ir) {
+int reg_d(MIPS ir) {
    int rd = (ir >> 11) & 0x1F;
    printReg(rd, "rd");
    return rd;

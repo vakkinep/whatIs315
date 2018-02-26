@@ -17,9 +17,9 @@ char type(unsigned int op_code, MIPS ir);
 unsigned int jmp_addr(MIPS ir);
 void  printReg(int reg, char* title);
 unsigned int eff_addr_ls(MIPS ir);
-int res_s(MIPS ir);
-int res_t(MIPS ir);
-int res_d(MIPS ir);
+int reg_s(MIPS ir);
+int reg_t(MIPS ir);
+int reg_d(MIPS ir);
 void readInstructions(int memp);
 void printRegRS(MIPS ir);
 
