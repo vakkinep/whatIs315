@@ -255,7 +255,7 @@ int reg_d(MIPS ir) {
    return rd;
 }
 
-void printReg(int reg, char* title) {
+void printReg(int reg, char* title) { //title will be which register (rs, rt, rd)
     int name;
   if (reg == 0) {
      printf("%s=%d ($zero), ", title, reg);
