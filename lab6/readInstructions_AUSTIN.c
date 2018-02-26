@@ -45,9 +45,8 @@ void readInstructions(int memp) {
       curr_instruction = mem[i/4];
       printf("@PC=%08X, ", i);
 
-<<<<<<< HEAD
       instruct.opcode = op_code(curr_instruction);		                         //Print Opcode
-      instruct.type = type(opcode, curr_instruction);			         //Print instruction type
+      instruct.type = type(instruct.opcode, curr_instruction);			         //Print instruction type
 
       //if R-Type
       if (instruct.type == 'r') { 
@@ -61,18 +60,10 @@ void readInstructions(int memp) {
       }
 
       //if I-Type, print immediate value
-<<<<<<< HEAD
       if (instruct.type == 'i'|| instruct_type == 'b' || instruct_type == 's') {
          instruct.rs = reg_s(curr_instruction);
          instruct.rt = reg_t(curr_instruction);
          instruct.imm_value = imm_val(curr_instruction);
-=======
-      if (instruct_type == 'i'|| instruct_type == 'b' || instruct_type == 's') {
-         //printReg(curr_instruction, 1, 1, 0);
-         getRegRs(curr_instruction);
-         getRegRt(curr_instruction);
-         imm_value = imm_val(curr_instruction);
->>>>>>> fix reg functions
       }
 
       //if I-Type (Branch), print branch address
@@ -263,68 +254,6 @@ int res_d(MIPS ir) {
    printReg(rd, "rd");
    return rd;
 }
-
-   // if (rs_en) {
-   //    if (rs == 0) {
-   //       printf("rs=%d ($zero), ", rs);
-   //    } else if (rs <= 3) {
-   //       RsReg= rs - 2;
-   //       printf("rs=%d ($v%d), ", rs,RsReg);
-   //    } else if (rs <= 7) {
-   //       RsReg= rs - 4;
-   //       printf("rs=%d ($a%d), ", rs,RsReg);
-   //    } else if (rs <= 15) {
-   //       RsReg= rs - 8;
-   //       printf("rs=%d ($t%d), ", rs,RsReg);
-   //    } else if (rs <= 23) {
-   //       RsReg= rs - 16;
-   //       printf("rs=%d ($s%d), ", rs,RsReg);
-   //    } else if (rs == 31) {
-   //       printf("rs=%d ($ra) ", rs);
-   //    }
-   // }
-   // int RtReg;
-
-   // if (rt_en) {
-   //    if (rt == 0) {
-   //       printf("rt=%d ($zero), ", rt);
-   //    } else if (rt <= 3) {
-   //       RtReg= rt - 2;
-   //       printf("rt=%d ($v%d), ", rt,RtReg);
-   //    } else if (rt <= 7) {
-   //       RtReg= rt - 4;
-   //       printf("rt=%d ($a%d), ", rt,RtReg);
-   //    } else if (rt <= 15) {
-   //       RtReg= rt - 8;
-   //       printf("rt=%d ($t%d), ", rt,RtReg);
-   //    } else if (rt <= 23) {
-   //       RtReg= rt - 16;
-   //       printf("rt=%d ($s%d), ", rt,RtReg);
-   //    } else if (rt == 31) {
-   //       printf("rt=%d ($ra) ", rt);
-   //    }
-   // }
-   // int RdReg;
-
-   // if (rd_en) {
-   //    if (rd == 0) {
-   //       printf("rd=%d ($zero), ", rd);
-   //    } else if (rd <= 3) {
-   //       RdReg= rd - 2;
-   //       printf("rd=%d ($v%d), ", rd,RdReg);
-   //    } else if (rd <= 7) {
-   //       RdReg= rd - 4;
-   //       printf("rd=%d ($a%d), ", rd,RdReg);
-   //    } else if (rd <= 15) {
-   //       RdReg= rd - 8;
-   //       printf("rd=%d ($t%d), ", rd,RdReg);
-   //    } else if (rd <= 23) {
-   //       RdReg= rd - 16;
-   //       printf("rd=%d ($s%d), ", rd,RdReg);
-   //    } else if (rd == 31) {
-   //       printf("rd=%d ($ra) ", rd);
-   //    }
-   // }
 
 void printReg(int reg, char* title) {
     int name;
