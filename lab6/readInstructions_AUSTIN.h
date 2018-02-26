@@ -15,12 +15,12 @@ int imm_val(MIPS ir);
 int eff_addr(int pc, int imm_value);
 char type(unsigned int op_code, MIPS ir);
 unsigned int jmp_addr(MIPS ir);
-void  printReg(MIPS ir, int rs_en, int rt_en, int rd_en);
+void  printReg(int reg, char* title);
 unsigned int eff_addr_ls(MIPS ir);
 int res_s(MIPS ir);
 int res_t(MIPS ir);
 int res_d(MIPS ir);
-void printRegRS(MIPS ir);
 void readInstructions(int memp);
+void printRegRS(MIPS ir);
 
 #endif

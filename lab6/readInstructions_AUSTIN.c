@@ -60,15 +60,15 @@ void readInstructions(int memp) {
       }
 
       //if I-Type, print immediate value
-      if (instruct.type == 'i'|| instruct_type == 'b' || instruct_type == 's') {
+      if (instruct.type == 'i'|| instruct.type == 'b' || instruct.type == 's') {
          instruct.rs = reg_s(curr_instruction);
          instruct.rt = reg_t(curr_instruction);
-         instruct.imm_value = imm_val(curr_instruction);
+         instruct.immed = imm_val(curr_instruction);
       }
 
       //if I-Type (Branch), print branch address
       if (instruct.type == 'b') {
-         eff_addr(i, instruct.imm_value);
+         eff_addr(i, instruct.immed);
       }
 
       //if J-Type, print Jump Address
