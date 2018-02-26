@@ -46,7 +46,7 @@ void readInstructions(int memp) {
       printf("@PC=%08X, ", i);
 
       instruct.opcode = op_code(curr_instruction);		                         //Print Opcode
-      instruct.type = type(opcode, curr_instruction);			         //Print instruction type
+      instruct.type = type(instruct.opcode, curr_instruction);			         //Print instruction type
 
       //if R-Type
       if (instruct.type == 'r') { 
@@ -237,73 +237,43 @@ void printRegRS(MIPS ir) {
 
 }
 
-void printReg(MIPS ir, int rs_en, int rt_en, int rd_en) {
+int reg_s(MIPS ir) {
    int rs = (ir >> 21) & 0x1F;
+   printReg(rs, "rs");
+   return rs;
+}
+
+int res_t(MIPS ir) {
    int rt = (ir >> 16) & 0x1F;
+   printReg(rt, "rt");
+   return rt;
+}
+
+int res_d(MIPS ir) {
    int rd = (ir >> 11) & 0x1F;
+   printReg(rd, "rd");
+   return rd;
+}
 
-   int RsReg;
-   if (rs_en) {
-      if (rs == 0) {
-         printf("rs=%d ($zero), ", rs);
-      } else if (rs <= 3) {
-         RsReg= rs - 2;
-         printf("rs=%d ($v%d), ", rs,RsReg);
-      } else if (rs <= 7) {
-         RsReg= rs - 4;
-         printf("rs=%d ($a%d), ", rs,RsReg);
-      } else if (rs <= 15) {
-         RsReg= rs - 8;
-         printf("rs=%d ($t%d), ", rs,RsReg);
-      } else if (rs <= 23) {
-         RsReg= rs - 16;
-         printf("rs=%d ($s%d), ", rs,RsReg);
-      } else if (rs == 31) {
-         printf("rs=%d ($ra) ", rs);
-      }
-   }
-   int RtReg;
-
-   if (rt_en) {
-      if (rt == 0) {
-         printf("rt=%d ($zero), ", rt);
-      } else if (rt <= 3) {
-         RtReg= rt - 2;
-         printf("rt=%d ($v%d), ", rt,RtReg);
-      } else if (rt <= 7) {
-         RtReg= rt - 4;
-         printf("rt=%d ($a%d), ", rt,RtReg);
-      } else if (rt <= 15) {
-         RtReg= rt - 8;
-         printf("rt=%d ($t%d), ", rt,RtReg);
-      } else if (rt <= 23) {
-         RtReg= rt - 16;
-         printf("rt=%d ($s%d), ", rt,RtReg);
-      } else if (rt == 31) {
-         printf("rt=%d ($ra) ", rt);
-      }
-   }
-   int RdReg;
-
-   if (rd_en) {
-      if (rd == 0) {
-         printf("rd=%d ($zero), ", rd);
-      } else if (rd <= 3) {
-         RdReg= rd - 2;
-         printf("rd=%d ($v%d), ", rd,RdReg);
-      } else if (rd <= 7) {
-         RdReg= rd - 4;
-         printf("rd=%d ($a%d), ", rd,RdReg);
-      } else if (rd <= 15) {
-         RdReg= rd - 8;
-         printf("rd=%d ($t%d), ", rd,RdReg);
-      } else if (rd <= 23) {
-         RdReg= rd - 16;
-         printf("rd=%d ($s%d), ", rd,RdReg);
-      } else if (rd == 31) {
-         printf("rd=%d ($ra) ", rd);
-      }
-   }
+void printReg(int reg, char* title) {
+    int name;
+  if (reg == 0) {
+     printf("%s=%d ($zero), ", title, reg);
+  } else if (reg <= 3) {
+     name= reg - 2;
+     printf("%s=%d ($v%d), ", title, reg, name);
+  } else if (reg <= 7) {
+     name= reg - 4;
+     printf("%s=%d ($a%d), ", title, reg, name);
+  } else if (reg <= 15) {
+     name= reg - 8;
+     printf("%s=%d ($t%d), ", title, reg, name);
+  } else if (reg <= 23) {
+     name= reg - 16;
+     printf("%s=%d ($s%d), ", title, reg, name);
+  } else if (reg == 31) {
+     printf("%s=%d ($ra, ", title, reg);
+  }
 }
 
 void printValues(INST instruction) {                                             // Prints the instruction values
