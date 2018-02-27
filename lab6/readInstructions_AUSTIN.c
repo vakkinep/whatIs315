@@ -282,9 +282,7 @@ void printValues(INST instruction) {                                            
       case ('i') : break;                                                        //i-type
       case ('b') : break;                                                        //brn inst
       case ('s') : break;                                                        //ld/store
-      case ('j') : 
-        printf("J Type, jmp_addr=0x%06X\n", jmp_addr);
-        break;                                                        //j-type
+      case ('j') : printf("jmp_addr=0x%06X\n", jmp_addr); break;                                                        //j-type
       case ('n') : break;                                                        //nop
    }
 }
