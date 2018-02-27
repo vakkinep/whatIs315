@@ -27,6 +27,11 @@ typedef struct INSTRUCTION {
 //============GLOBAL VARIABLES
 MIPS mem[1024];	                                                       	         /* Room for 4K bytes */
 
+
+//============PROTOTYPE
+void printValues(INST instruction);
+
+
 int main(int argc, char *argv[]) {
    int memp;                                                                     //Size of pulled instructions
 
@@ -43,7 +48,7 @@ void readInstructions(int memp) {
 
    for (i = 0; i<memp; i+=4) {	                                                 /* i contains byte offset addresses */
       curr_instruction = mem[i/4];
-      printf("@PC=%08X, ", i);
+      printf("\n@PC=%08X, ", i);
 
       instruct.opcode = op_code(curr_instruction);		                         //Print Opcode
       instruct.type = type(instruct.opcode, curr_instruction);			         //Print instruction type
@@ -80,8 +85,12 @@ void readInstructions(int memp) {
       if (instruct.type == 's') {
          eff_addr_ls(curr_instruction);
       }     
+
+      printValues(instruct);
    }
 
+
+   printf("\n\n");
    exit(0);
 }
 
@@ -161,6 +170,7 @@ int eff_addr(int pc, int imm_value) {                                           
    eff_addr = pc + imm_value;
    return eff_addr;
 }
+
 unsigned int jmp_addr(MIPS ir) {                                                         //J Types
    unsigned int jmp_addr;
 
@@ -209,32 +219,8 @@ unsigned int eff_addr_ls(MIPS ir) {
    unsigned int ext_imm = (ir & 0x0000FFFF);
    ext_imm |= ((ext_imm & 0x8000) ? 0xFFFF0000 : 0);
    printf(", \nEffAddr=R[");
-   printRegRS(ir);
+   reg_s(ir);
    printf("] + 0x%08X", ext_imm);
-}
-
-void printRegRS(MIPS ir) {
-   int rs = (ir >> 21) & 0x1F;
-
-   int RsReg;
-   if (rs == 0) {
-      printf("$zero", rs);
-   } else if (rs <= 3) {
-      RsReg= rs - 2;
-      printf("$v%d", rs,RsReg);
-   } else if (rs <= 7) {
-      RsReg= rs - 4;
-      printf("$a%d, ", rs,RsReg);
-   } else if (rs <= 15) {
-      RsReg= rs - 8;
-      printf("$t%d", rs,RsReg);
-   } else if (rs <= 23) {
-      RsReg= rs - 16;
-      printf("$s%d", rs,RsReg);
-   } else if (rs == 31) {
-      printf("$ra", rs);
-   }
-
 }
 
 int reg_s(MIPS ir) {
@@ -256,33 +242,41 @@ int reg_d(MIPS ir) {
 }
 
 void printReg(int reg, char* title) {
-    int name;
-  if (reg == 0) {
-     printf("%s=%d ($zero), ", title, reg);
-  } else if (reg <= 3) {
-     name= reg - 2;
-     printf("%s=%d ($v%d), ", title, reg, name);
-  } else if (reg <= 7) {
-     name= reg - 4;
-     printf("%s=%d ($a%d), ", title, reg, name);
-  } else if (reg <= 15) {
-     name= reg - 8;
-     printf("%s=%d ($t%d), ", title, reg, name);
-  } else if (reg <= 23) {
-     name= reg - 16;
-     printf("%s=%d ($s%d), ", title, reg, name);
-  } else if (reg == 31) {
-     printf("%s=%d ($ra, ", title, reg);
-  }
+   int name;
+   if (reg == 0) {
+      printf("%s=%d ($zero), ", title, reg);
+   } else if (reg <= 3) {
+      name= reg - 2;
+      printf("%s=%d ($v%d), ", title, reg, name);
+   } else if (reg <= 7) {
+      name= reg - 4;
+      printf("%s=%d ($a%d), ", title, reg, name);
+   } else if (reg <= 15) {
+      name= reg - 8;
+      printf("%s=%d ($t%d), ", title, reg, name);
+   } else if (reg <= 23) {
+      name= reg - 16;
+      printf("%s=%d ($s%d), ", title, reg, name);
+   } else if (reg == 31) {
+      printf("%s=%d ($ra, ", title, reg);
+   }
 }
 
 void printValues(INST instruction) {                                             // Prints the instruction values
+   printf("OPCODE: 0x%06X\tTYPE: %c\n",instruction.opcode, instruction.type);
    switch (instruction.type) {
-      case ('r') : printf("values\n"); break;                                    //r-type
-      case ('i') : break;                                                        //i-type
-      case ('b') : break;                                                        //brn inst
-      case ('s') : break;                                                        //ld/store
-      case ('j') : break;                                                        //j-type
+      case ('r') : 
+         printf("values: \n");                                        //r-type       AUSTIN
+         printReg(instruction.rs, "rs");
+         printReg(instruction.rt, "rt");
+         printReg(instruction.rd, "rd");
+         printf("\n");
+         printf("SHAMT: %d\t FUNCTION: 0x%02X\n\n\n", instruction.shamt, instruction.func_code);
+         break;
+      case ('i') : break;                                                        //i-type       AUSTIN
+      case ('b') : break;                                                        //brn inst     VINNIE
+      case ('s') : break;                                                        //ld/store     VINNIE
+      case ('j') : break;                                                        //j-type       JENNA
       case ('n') : break;                                                        //nop
    }
 }

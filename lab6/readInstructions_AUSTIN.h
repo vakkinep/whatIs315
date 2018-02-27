@@ -22,5 +22,6 @@ int reg_t(MIPS ir);
 int reg_d(MIPS ir);
 void readInstructions(int memp);
 void printRegRS(MIPS ir);
+//void printValues(INST instruction);
 
 #endif
