@@ -183,8 +183,8 @@ unsigned int jmp_addr(MIPS ir) {                                                
 
 char type(unsigned int op_code, MIPS ir) {
    switch(op_code) {
-      case 0x00: return 'n';
-      case 0x02: printf("OpCode=0x%02X, J Type (j), ", op_code); return 'j';
+      case 0x00: return 'n'; //nop
+      case 0x02: printf("OpCode=0x%02X, J Type (j), ", op_code); return 'j'; 
       case 0x03: printf("OpCode=0x%02X, J Type (jal), ", op_code); return 'j';
       case 0x08: printf("OpCode=0x%02X, I Type (addi)\n", op_code); return 'i';
       case 0x09: printf("OpCode=0x%02X, I Type (addiu)\n", op_code); return 'i';
@@ -241,25 +241,25 @@ int reg_d(MIPS ir) {
    return rd;
 }
 
-void printReg(int reg, char* title) {
-   int name;
-   if (reg == 0) {
-      printf("%s=%d ($zero), ", title, reg);
-   } else if (reg <= 3) {
-      name= reg - 2;
-      printf("%s=%d ($v%d), ", title, reg, name);
-   } else if (reg <= 7) {
-      name= reg - 4;
-      printf("%s=%d ($a%d), ", title, reg, name);
-   } else if (reg <= 15) {
-      name= reg - 8;
-      printf("%s=%d ($t%d), ", title, reg, name);
-   } else if (reg <= 23) {
-      name= reg - 16;
-      printf("%s=%d ($s%d), ", title, reg, name);
-   } else if (reg == 31) {
-      printf("%s=%d ($ra, ", title, reg);
-   }
+void printReg(int reg, char* title) { //title will be which register (rs, rt, rd)
+    int name;
+  if (reg == 0) {
+     printf("%s=%d ($zero), ", title, reg);
+  } else if (reg <= 3) {
+     name= reg - 2;
+     printf("%s=%d ($v%d), ", title, reg, name);
+  } else if (reg <= 7) {
+     name= reg - 4;
+     printf("%s=%d ($a%d), ", title, reg, name);
+  } else if (reg <= 15) {
+     name= reg - 8;
+     printf("%s=%d ($t%d), ", title, reg, name);
+  } else if (reg <= 23) {
+     name= reg - 16;
+     printf("%s=%d ($s%d), ", title, reg, name);
+  } else if (reg == 31) {
+     printf("%s=%d ($ra, ", title, reg);
+  }
 }
 
 void printValues(INST instruction) {                                             // Prints the instruction values
@@ -276,7 +276,7 @@ void printValues(INST instruction) {                                            
       case ('i') : break;                                                        //i-type       AUSTIN
       case ('b') : break;                                                        //brn inst     VINNIE
       case ('s') : break;                                                        //ld/store     VINNIE
-      case ('j') : break;                                                        //j-type       JENNA
+      case ('j') : printf("jmp_addr=0x%06X\n", jmp_addr); break;                                                        //j-type
       case ('n') : break;                                                        //nop
    }
 }
