@@ -20,7 +20,7 @@ typedef struct INSTRUCTION {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "readInstructions_AUSTIN.h"
+#include "readInstructions.h"
 #include "startChecks.h"
 #include "mips_asm_header.h"
 
