@@ -277,6 +277,10 @@ void printValues(INST instruction) {                                            
          printf("SHAMT: %d\t FUNCTION: 0x%02X\n\n\n", instruction.shamt, instruction.func_code);
          break;
       case ('i') : break;                                                        //i-type       AUSTIN
+         printf("values: \n");
+         printReg(instruction.rs, "rs");
+         printReg(instruction.rt, "rt");
+         printf("Immed value: 0x%04X\n", instruction.immed);
       case ('b') : break;                                                        //brn inst     VINNIE
       case ('s') : break;                                                        //ld/store     VINNIE
       case ('j') : printf("jmp_addr=0x%06X\n", jmp_addr); break;                                                        //j-type
