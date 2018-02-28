@@ -267,7 +267,7 @@ void printValues(INST instruction) {                                            
    printf("OPCODE: 0x%06X\tTYPE: %c\n",instruction.opcode, instruction.type);
    switch (instruction.type) {
       case ('r') : 
-         printf("values: \n");                                        //r-type       AUSTIN
+         printf("values: \n");                                                   //r-type       AUSTIN
          printReg(instruction.rs, "rs");
          printReg(instruction.rt, "rt");
          printReg(instruction.rd, "rd");
