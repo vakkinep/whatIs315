@@ -34,6 +34,7 @@ void printValues(INST instruction);
 
 int main(int argc, char *argv[]) {
    int memp;                                                                     //Size of pulled instructions
+   reg regs[32] = {0};
 
    checkInputs(argc, argv);
    memp = checkFile(argv, mem, sizeof(mem));
@@ -79,6 +80,7 @@ void readInstructions(int memp) {
       //if J-Type, print Jump Address
       if (instruct.type == 'j') {
          instruct.jmp_addr = jmp_addr(curr_instruction);
+         i = instruct.jmp_addr;
       }
 
       //if Store/load I-Type

@@ -3,6 +3,7 @@
 
 //===========STRUCTS
 typedef unsigned int MIPS, *MIPS_PTR;
+typedef unsigned int reg, *reg_ptr;
 
 #include "startChecks.h"
 #include "mips_asm_header.h"
