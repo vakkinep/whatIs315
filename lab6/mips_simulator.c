@@ -1,9 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "readInstructions_AUSTIN.h"
+#include "readInstructions.h"
 
-int main() {
+int runSimulator(char mode) {
+   if (mode == 's') {
+      //run one instruction and print
+   } else if (mode == 'r') {
+      //run all instructions and print only end result
+   }
+   else {
+      printf("ERROR - USAGE \n\t 'r' - run \n\t 's' - single step\n\n");
+   }
    return 0;
 }
 
@@ -19,7 +27,8 @@ int main() {
 *        c. Create an offset for fed in pointers
 *     3.Print results of the run
 *     4.End if syscall with function code of 10 in $v0
-*     5.
+*     5.Take input for single step and wait for either "run" to change mode or 
+*        input for next step.
 *     6.
 *
 *
