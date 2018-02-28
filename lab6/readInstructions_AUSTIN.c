@@ -56,7 +56,7 @@ void readInstructions(int memp) {
       //if R-Type
       if (instruct.type == 'r') { 
          instruct.func_code = func_code(curr_instruction);
-         if (instruct.func_code) {			                 //print function code
+         if (instruct.func_code) {			                 					//print function code
             instruct.rs = reg_s(curr_instruction);
             instruct.rt = reg_t(curr_instruction);
             instruct.rd = reg_d(curr_instruction);
@@ -175,7 +175,7 @@ unsigned int jmp_addr(MIPS ir) {                                                
    unsigned int jmp_addr;
 
    jmp_addr = (ir & 0x03FFFFFF);
-   printf("addr=0x%06X \n", jmp_addr);
+   //printf("addr=0x%06X \n", jmp_addr);
 
    jmp_addr <<= 2;	
    return jmp_addr;
@@ -218,9 +218,10 @@ char type(unsigned int op_code, MIPS ir) {
 unsigned int eff_addr_ls(MIPS ir) {
    unsigned int ext_imm = (ir & 0x0000FFFF);
    ext_imm |= ((ext_imm & 0x8000) ? 0xFFFF0000 : 0);
-   printf(", \nEffAddr=R[");
+   //printf(", \nEffAddr=R[");
    reg_s(ir);
-   printf("] + 0x%08X", ext_imm);
+   //printf("] + 0x%08X", ext_imm);
+   return ext_imm;
 }
 
 int reg_s(MIPS ir) {
