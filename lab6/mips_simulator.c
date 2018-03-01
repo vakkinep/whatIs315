@@ -43,7 +43,7 @@ void printRegisters(REG* regs) {
       if ((i % 3) == 0 && i > 0) {
          printf("\n");
       }
-      printf("REG[%2d]:\t 0x%04X\t\t", i, regs[i]);
+      printf("REG[%2d]:\t 0x%08X\t\t", i, regs[i]);
    }
 }
 
@@ -79,8 +79,6 @@ int main(int argc, char *argv[]) {
    int memp;                                                                     //Size of pulled instructions
    int pc = 0;
    REG regs[32] = {0};
-   //CHECKING INIT OF REGISTERS
-   printRegisters(regs);
 
    checkInputs(argc, argv);
    memp = checkFile(argv, mem, sizeof(mem));
