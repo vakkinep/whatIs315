@@ -38,7 +38,7 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
          instruct.rt = reg_t(curr_instruction);
          instruct.rd = reg_d(curr_instruction);
          instruct.shamt = shamt(curr_instruction);
-         execute(instruct);
+         //TODO         execute(instruct);
       }
    }
 
@@ -70,7 +70,7 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
       instruct.eff_addr = eff_addr_ls(curr_instruction);
    }     
 
-   if (instruct.func_code || instruct.type != 'r' && instruct.type != 'x') {
+   if (instruct.func_code && instruct.type != 'x') {
       printValues(instruct);
    }
 
@@ -135,29 +135,42 @@ int func_code(MIPS ir) {                                                        
 }
 
 void execute(INST instruct) {
-   switch (instruct.func_code) {
-      case 0x20: break; 	// (add)
-      case 0x21: break; 	// (addu)
-      case 0x22: break; 	// (sub)
-      case 0x23: break; 	// (subu)
-      case 0x24: break; 	// (and)
-      case 0x27: break; 	// (nor)
-      case 0x25: break; 	// (or)
-      case 0x26: break; 	// (xor)
-      case 0x00: break; 	// (sll)
-      case 0x02: break; 	// (srl)
-      case 0x03: break; 	// (sra)
-      case 0x04: break; 	// (sllv)
-      case 0x06: break; 	// (srlv)
-      case 0x07: break; 	// (srav)
-      case 0x2A: break; 	// (slt)
-      case 0x2B: break; 	// (sltu)
-      case 0x08: break; 	// (jr)
-      case 0x09: break; 	// (jalr)
-      case 0x1A: break; 	// (div)
-      case 0x1B: break; 	// (divu)
-      case 0x18: break; 	// (mult)
-      case 0x19: break; 	// (multu)
+   switch(instruct.type) {
+      case('r') 
+         switch (instruct.func_code) {
+            case 0x20: break; 	// (add)
+            case 0x21: break; 	// (addu)
+            case 0x22: break; 	// (sub)
+            case 0x23: break; 	// (subu)
+            case 0x24: break; 	// (and)
+            case 0x27: break; 	// (nor)
+            case 0x25: break; 	// (or)
+            case 0x26: break; 	// (xor)
+            case 0x00: break; 	// (sll)
+            case 0x02: break; 	// (srl)
+            case 0x03: break; 	// (sra)
+            case 0x04: break; 	// (sllv)
+            case 0x06: break; 	// (srlv)
+            case 0x07: break; 	// (srav)
+            case 0x2A: break; 	// (slt)
+            case 0x2B: break; 	// (sltu)
+            case 0x08: break; 	// (jr)
+            case 0x09: break; 	// (jalr)
+            case 0x1A: break; 	// (div)
+            case 0x1B: break; 	// (divu)
+            case 0x18: break; 	// (mult)
+            case 0x19: break; 	// (multu)
+         }
+      break;
+   case('i')
+      break;
+   case('s')
+      break;
+   case('b')   //do nothing for branch its already done
+      break;
+   case('j')   //do nothing for jump its already done too
+      break;   
+
    }
 }
 
