@@ -5,18 +5,6 @@
  * Austin Whaley
  *----------------------------------------------------------------------*/
 
-typedef struct INSTRUCTION {
-	char type;
-	unsigned int  opcode;
-	unsigned int  rs;
-	unsigned int  rt;
-	unsigned int  rd;
-	unsigned int  shamt;
-	unsigned int  func_code;
-	int  immed;
-	unsigned int  jmp_addr;
-} INST;
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,20 +27,18 @@ void printValues(INST instruction);
    checkInputs(argc, argv);
    memp = checkFile(argv, mem, sizeof(mem));
    readInstructions(memp, regs);
+   printValues(instruct);
 }*/
 
-void readInstructions(int memp, REG regs[]) {
-	int pc = 0;
-
+int readInstructions(int memp, REG regs[], int pc, INST instruct) {
 	while( pc<memp ) {	                                                 /* i contains byte offset addresses */
-    	pc = readNextInst(memp, regs, pc);								//increment pc inside for jump and branch
+    	pc = readNextInst(memp, regs, pc, instruct);								//increment pc inside for jump and branch
   	}
   	printf("\n\n");
- 	exit(0);
+  	return pc;
 }
 
-int readNextInst(int memp, REG regs[], int pc) {
-	INST instruct;
+int readNextInst(int memp, REG regs[], int pc, INST instruct) {
 	int curr_instruction = mem[pc/4];
 	printf("\n@PC=%08X, ", pc);
 
@@ -80,7 +66,7 @@ int readNextInst(int memp, REG regs[], int pc) {
       //if I-Type (Branch), print branch address
     if (instruct.type == 'b') {
     	regs[31] = pc + 4;
-    	pc = eff_addr(pc, instruct.immed);
+    	pc = eff_addr(pc, instruct.immed)-4;
     }
 
       //if J-Type, print Jump Address
@@ -96,8 +82,6 @@ int readNextInst(int memp, REG regs[], int pc) {
      if (instruct.type == 's') {
      	eff_addr_ls(curr_instruction);
      }     
-
-     printValues(instruct);
       return pc+4;																	//increment pc
   }
 
@@ -234,19 +218,19 @@ unsigned int eff_addr_ls(MIPS ir) {
 
 int reg_s(MIPS ir) {
 	int rs = (ir >> 21) & 0x1F;
-	printReg(rs, "rs");
+	//printReg(rs, "rs");
 	return rs;
 }
 
 int reg_t(MIPS ir) {
 	int rt = (ir >> 16) & 0x1F;
-	printReg(rt, "rt");
+	//printReg(rt, "rt");
 	return rt;
 }
 
 int reg_d(MIPS ir) {
 	int rd = (ir >> 11) & 0x1F;
-	printReg(rd, "rd");
+	//printReg(rd, "rd");
 	return rd;
 }
 

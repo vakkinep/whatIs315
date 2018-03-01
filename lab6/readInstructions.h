@@ -5,6 +5,18 @@
 typedef unsigned int MIPS, *MIPS_PTR;
 typedef unsigned int REG, *REG_PTR;
 
+typedef struct INSTRUCTION {
+	char type;
+	unsigned int  opcode;
+	unsigned int  rs;
+	unsigned int  rt;
+	unsigned int  rd;
+	unsigned int  shamt;
+	unsigned int  func_code;
+	int  immed;
+	unsigned int  jmp_addr;
+} INST;
+
 #include "startChecks.h"
 #include "mips_asm_header.h"
 
@@ -21,8 +33,8 @@ unsigned int eff_addr_ls(MIPS ir);
 int reg_s(MIPS ir);
 int reg_t(MIPS ir);
 int reg_d(MIPS ir);
-void readInstructions(int memp, REG reg[]);
-int readNextInst(int memp, REG regs[], int pc);
+int readInstructions(int memp, REG reg[], int pc, INST instruct);
+int readNextInst(int memp, REG regs[], int pc, INST instruct);
 //void printValues(INST instruction);
 
 #endif

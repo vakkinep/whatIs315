@@ -3,11 +3,20 @@
 #include <string.h>
 #include "readInstructions.h"
 
-int runSimulator(char mode) {
+//=================== GLOBAL VARIABLES
+MIPS mem[1024];	
+
+int runSimulator(char mode, int memp, REG regs[]) {
+	int pc = 0;
+	INST instruct;
    if (mode == 's') {
       //run one instruction and print
+   	  pc = readNextInst(memp, regs, pc, instruct);
+   	  printValues(instruct);
    } else if (mode == 'r') {
       //run all instructions and print only end result
+   	  pc = readInstructions(memp, regs, pc, instruct);
+   	   printValues(instruct);
    }
    else {
       printf("ERROR - USAGE \n\t 'r' - run \n\t 's' - single step\n\n");
@@ -47,6 +56,12 @@ int runSimulator(char mode) {
 */
 int main(int argc, char *argv[]) {
 	char ch;
+	int memp;                                                                     //Size of pulled instructions
+   	REG regs[32] = {0};
+
+   	checkInputs(argc, argv);
+   	memp = checkFile(argv, mem, sizeof(mem));
+
 	//printf("\nEnter mode ('r' - run, 's' - single step): \n");
 	while ( 1 ) {
 		char t;
@@ -57,7 +72,7 @@ int main(int argc, char *argv[]) {
 			printf("Exiting.\n");
 			break;
 		}
-		runSimulator(ch);
+		runSimulator(ch, memp, regs);
 		while ((t = getchar()) != EOF && t != '\n'); 								//loop through rest of stdin
 	}
 }
