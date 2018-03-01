@@ -34,22 +34,22 @@ void printValues(INST instruction);
 
 int main(int argc, char *argv[]) {
    int memp;                                                                     //Size of pulled instructions
-   reg regs[32] = {0};
+   REG regs[32] = {0};
 
    checkInputs(argc, argv);
    memp = checkFile(argv, mem, sizeof(mem));
-   readInstructions(memp);
+   readInstructions(memp, regs);
 }
 
-void readInstructions(int memp) {
+void readInstructions(int memp, REG regs[]) {
    int curr_instruction;
    INST instruct;
-   int i;
+   int pc;
 
 
-   for (i = 0; i<memp; i+=4) {	                                                 /* i contains byte offset addresses */
-      curr_instruction = mem[i/4];
-      printf("\n@PC=%08X, ", i);
+   for (pc = 0; pc<memp; pc+=4) {	                                                 /* i contains byte offset addresses */
+      curr_instruction = mem[pc/4];
+      printf("\n@PC=%08X, ", pc);
 
       instruct.opcode = op_code(curr_instruction);		                         //Print Opcode
       instruct.type = type(instruct.opcode, curr_instruction);			         //Print instruction type
@@ -74,13 +74,16 @@ void readInstructions(int memp) {
 
       //if I-Type (Branch), print branch address
       if (instruct.type == 'b') {
-         eff_addr(i, instruct.immed);
+         eff_addr(pc, instruct.immed);
       }
 
       //if J-Type, print Jump Address
       if (instruct.type == 'j') {
          instruct.jmp_addr = jmp_addr(curr_instruction);
-         i = instruct.jmp_addr;
+         if (instruct.opcode == 0x03) {												//jump and link
+         	regs[31] = pc;
+         }
+         pc = instruct.jmp_addr; 
       }
 
       //if Store/load I-Type

@@ -3,7 +3,7 @@
 
 //===========STRUCTS
 typedef unsigned int MIPS, *MIPS_PTR;
-typedef unsigned int reg, *reg_ptr;
+typedef unsigned int REG, *REG_PTR;
 
 #include "startChecks.h"
 #include "mips_asm_header.h"
@@ -21,7 +21,7 @@ unsigned int eff_addr_ls(MIPS ir);
 int reg_s(MIPS ir);
 int reg_t(MIPS ir);
 int reg_d(MIPS ir);
-void readInstructions(int memp);
+void readInstructions(int memp, REG reg[]);
 void printRegRS(MIPS ir);
 //void printValues(INST instruction);
 
