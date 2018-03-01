@@ -66,7 +66,7 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
       //if I-Type (Branch), print branch address
     if (instruct.type == 'b') {
     	regs[31] = pc + 4;
-    	pc = eff_addr(pc, instruct.immed)-4;
+    	return (pc = eff_addr(pc, instruct.immed));
     }
 
       //if J-Type, print Jump Address
@@ -75,7 +75,7 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
          if (instruct.opcode == 0x03) {												//jump and link
          	regs[31] = pc + 4;
          }
-         pc = instruct.jmp_addr-4; 
+         return (pc = instruct.jmp_addr); 
      }
 
       //if Store/load I-Type
