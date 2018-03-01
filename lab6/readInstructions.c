@@ -27,17 +27,17 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
    int curr_instruction = mem[pc/4];
    printf("\n@PC=%08X\tIR = 0x%08X\n", pc, curr_instruction);
 
-   instruct.opcode = op_code(curr_instruction);		                         //Print Opcode
-   instruct.type   = type(instruct.opcode, curr_instruction);			         //Print instruction type
+   instruct.opcode = op_code(curr_instruction);		    
+   instruct.type   = type(instruct.opcode, curr_instruction);
 
    //if R-Type
    if (instruct.type == 'r') { 
       instruct.func_code = func_code(curr_instruction);
-      if (instruct.func_code) {			                 					//print function code
+      if (instruct.func_code) {		
          instruct.rs = reg_s(curr_instruction);
          instruct.rt = reg_t(curr_instruction);
          instruct.rd = reg_d(curr_instruction);
-         instruct.shamt = shamt(curr_instruction); 			                         //print shift amount
+         instruct.shamt = shamt(curr_instruction);
          execute(instruct);
       }
    }
@@ -52,17 +52,17 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
    //if I-Type (Branch), print branch address
    if (instruct.type == 'b') {
       regs[31] = pc + 4;
-      instruct.brn_addr = eff_addr(pc, instruct.immed);
-      //      return (pc = eff_addr(pc, instruct.immed));                                 //JUST IMPLEMENTING RUNNING NOW
+      instruct.brn_addr = pc + eff_addr(pc, instruct.immed);
+      return (pc = instruct.brn_addr);
    }
 
    //if J-Type, print Jump Address
    if (instruct.type == 'j') {
       instruct.jmp_addr = jmp_addr(curr_instruction);
-      if (instruct.opcode == 0x03) {												//jump and link
+      if (instruct.opcode == 0x03) {
          regs[31] = pc + 4;
       }
-      //      return (pc = instruct.jmp_addr);                                            //JUST IMPLEMENTING RUNNING NOW
+      return (pc = instruct.jmp_addr);
    }
 
    //if Store/load I-Type
@@ -74,7 +74,7 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
       printValues(instruct);
    }
 
-   return pc+4;																	//increment pc
+   return pc+4;
 }
 
 
@@ -102,7 +102,7 @@ int imm_val(MIPS ir) {                                                          
 int sign_ext(INST instruction) {
    int sign;
    unsigned int sign_ext;
-   
+
    sign_ext = instruction.immed;
    sign = (instruction.immed & 0x00008000);
 
@@ -261,14 +261,14 @@ void printValues(INST instruction) {                                            
    printf("OPCODE: 0x%02X\tTYPE: %c\n",instruction.opcode, instruction.type);
    switch (instruction.type) {
       case ('r') : 
-         printf("values: \n");                                                   //r-type       AUSTIN
+         printf("values: \n");                                 
          printReg(instruction.rs, "rs");
          printReg(instruction.rt, "rt");
          printReg(instruction.rd, "rd");
          printf("\n");
          printf("SHAMT: %d\t FUNCTION: 0x%02X\n", instruction.shamt, instruction.func_code);
          break;
-      case ('i') :                                                         //i-type       AUSTIN
+      case ('i') :                                            
          printf("values: \n");
          printReg(instruction.rs, "rs");
          printReg(instruction.rt, "rt");
@@ -276,7 +276,7 @@ void printValues(INST instruction) {                                            
          break;
       case ('b') : 
          printf("values: \nBranch Address: 0x%08X\n", instruction.brn_addr);
-         break;                                                        //brn inst     VINNIE
+         break;                                              
       case ('s') : 
          printf("values: \n");
          printReg(instruction.rs, "rs");
@@ -286,8 +286,8 @@ void printValues(INST instruction) {                                            
          printf("EffAddr=R[ ");
          printReg(instruction.rs, "rs");
          printf("] + 0x%08X\n",sign_ext(instruction));
-         break;                                                        //ld/store     VINNIE
-      case ('j') : printf("jmp_addr=0x%06X\n", instruction.jmp_addr); break;                                                        //j-type
-      case ('n') : break;                                                        //nop
+         break;                                             
+      case ('j') : printf("jmp_addr=0x%06X\n", instruction.jmp_addr); break;
+      case ('n') : break;                                  
    }
 }

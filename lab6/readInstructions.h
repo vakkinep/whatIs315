@@ -15,7 +15,7 @@ typedef struct INSTRUCTION {
 	unsigned int  func_code;
 	int           immed;
 	unsigned int  jmp_addr;
-        unsigned int  brn_addr;
+        int  brn_addr;
         unsigned int  eff_addr;
 } INST;
 
