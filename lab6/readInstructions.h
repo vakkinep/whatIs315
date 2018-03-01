@@ -32,7 +32,7 @@ int eff_addr(int pc, int imm_value);
 char type(unsigned int op_code, MIPS ir);
 unsigned int jmp_addr(MIPS ir);
 void  printReg(int reg, char* title);
-unsigned int eff_addr_ls(MIPS ir);
+unsigned int eff_addr_load(MIPS ir);
 int reg_s(MIPS ir);
 int reg_t(MIPS ir);
 int reg_d(MIPS ir);
@@ -40,6 +40,8 @@ int readInstructions(int memp, REG reg[], int pc, INST instruct);
 int readNextInst(int memp, REG regs[], int pc, INST instruct);
 void printValues(INST instruction);
 void execute(INST instruction, REG regs[]);
+int execute_branch(INST instruct, REG regs[], int pc);
+int execute_jump(INST instruct, REG regs[], int pc);
 //void printValues(INST instruction);
 
 #endif
