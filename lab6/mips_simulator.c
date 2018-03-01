@@ -6,13 +6,17 @@
 //=================== GLOBAL VARIABLES
 MIPS mem[1024];	
 
-int runSimulator(char mode, int memp, REG regs[]) {
-	int pc = 0;
+int runSimulator(char mode, int memp, REG regs[], int pc) {
 	INST instruct;
    if (mode == 's') {
       //run one instruction and print
-   	  pc = readNextInst(memp, regs, pc, instruct);
-   	  printValues(instruct);
+   		if (pc>=memp) {
+   			printf("Done\n");
+   		}
+   	  else {
+   	  	pc = readNextInst(memp, regs, pc, instruct);
+   	  	printValues(instruct);
+   	  }
    } else if (mode == 'r') {
       //run all instructions and print only end result
    	  pc = readInstructions(memp, regs, pc, instruct);
@@ -21,7 +25,7 @@ int runSimulator(char mode, int memp, REG regs[]) {
    else {
       printf("ERROR - USAGE \n\t 'r' - run \n\t 's' - single step\n\n");
    }
-   return 0;
+   return pc;
 }
 
 /*==================================TO DO======================================
@@ -57,6 +61,7 @@ int runSimulator(char mode, int memp, REG regs[]) {
 int main(int argc, char *argv[]) {
 	char ch;
 	int memp;                                                                     //Size of pulled instructions
+   	int pc = 0;
    	REG regs[32] = {0};
 
    	checkInputs(argc, argv);
@@ -72,7 +77,7 @@ int main(int argc, char *argv[]) {
 			printf("Exiting.\n");
 			break;
 		}
-		runSimulator(ch, memp, regs);
+		pc = runSimulator(ch, memp, regs, pc);
 		while ((t = getchar()) != EOF && t != '\n'); 								//loop through rest of stdin
 	}
 }

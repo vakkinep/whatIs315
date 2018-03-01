@@ -174,8 +174,11 @@ unsigned int jmp_addr(MIPS ir) {                                                
 }
 
 char type(unsigned int op_code, MIPS ir) {
+	if (ir == 0) {
+		return 'n';
+	}
 	switch(op_code) {
-      case 0x00: return 'n'; //nop
+      case 0x00: return 'r'; 
       case 0x02: printf("OpCode=0x%02X, J Type (j), ", op_code); return 'j'; 
       case 0x03: printf("OpCode=0x%02X, J Type (jal), ", op_code); return 'j';
       case 0x08: printf("OpCode=0x%02X, I Type (addi)\n", op_code); return 'i';
