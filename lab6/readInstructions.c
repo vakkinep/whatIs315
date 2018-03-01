@@ -1,7 +1,7 @@
 /*----------------------------------------------------------------------
  * Lab 6 - CPE 315
  * Jenna Stephens
- * Vankat Akkinepally
+ * Venkat Akkinepally
  * Austin Whaley
  *----------------------------------------------------------------------*/
 
@@ -14,6 +14,7 @@
 
 //============GLOBAL VARIABLES
 MIPS mem[1024];	                                                       	         /* Room for 4K bytes */
+unsigned int heap[4000];
 
 int readInstructions(int memp, REG regs[], int pc, INST instruct) {
    while(pc < memp) {	                                       /* While the pc is less than total instructions*/
@@ -38,7 +39,7 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
          instruct.rt = reg_t(curr_instruction);
          instruct.rd = reg_d(curr_instruction);
          instruct.shamt = shamt(curr_instruction);
-         //TODO         execute(instruct);
+         execute(instruct, regs);
       }
    }
 
@@ -136,33 +137,66 @@ int func_code(MIPS ir) {                                                        
 
 void execute(INST instruct, REG regs[]) {
    switch(instruct.type) {
-
-      case('r') : 
+      case('r'): 
          switch (instruct.func_code) {
-            case 0x20: break; 	// (add)
-            case 0x21: break; 	// (addu)
-            case 0x22: break; 	// (sub)
-            case 0x23: break; 	// (subu)
-            case 0x24: break; 	// (and)
-            case 0x27: break; 	// (nor)
-            case 0x25: break; 	// (or)
-            case 0x26: break; 	// (xor)
-            case 0x00: break; 	// (sll)
-            case 0x02: break; 	// (srl)
-            case 0x03: break; 	// (sra)
-            case 0x04: break; 	// (sllv)
-            case 0x06: break; 	// (srlv)
-            case 0x07: break; 	// (srav)
-            case 0x2A: break; 	// (slt)
-            case 0x2B: break; 	// (sltu)
-            case 0x08: break; 	// (jr)
+            case 0x20: 
+                regs[instruct.rd] = ((int)regs[instruct.rs]) + ((int)regs[instruct.rt]);
+            break; 	// (add)
+            case 0x21:
+                regs[instruct.rd] = ((unsigned int)regs[instruct.rs]) + ((unsigned int)regs[instruct.rt]);
+            break; 	// (addu)
+            case 0x22:  
+                regs[instruct.rd] = ((int)regs[instruct.rs]) - ((int)regs[instruct.rt]);
+            break; 	// (sub)
+            case 0x23:  
+                regs[instruct.rd] = ((unsigned int)regs[instruct.rs]) - ((unsigned int)regs[instruct.rt]);
+            break; 	// (subu)
+            case 0x24:  
+                regs[instruct.rd] = ((unsigned int)regs[instruct.rs]) & ((unsigned int)regs[instruct.rt]);
+            break; 	// (and)
+            case 0x27: 
+                regs[instruct.rd] = !(((unsigned int)regs[instruct.rs]) | ((unsigned int)regs[instruct.rt]));
+            break; 	// (nor)
+            case 0x25: 
+                regs[instruct.rd] = (((unsigned int)regs[instruct.rs]) | ((unsigned int)regs[instruct.rt]));
+            break; 	// (or)
+            case 0x26: 
+                regs[instruct.rd] = (((unsigned int)regs[instruct.rs]) ^ ((unsigned int)regs[instruct.rt]));
+            break; 	// (xor)
+            case 0x00: 
+                regs[instruct.rd] = ((unsigned int)regs[instruct.rt]) << instruct.shamt;
+            break; 	// (sll)
+            case 0x02:  
+                regs[instruct.rd] = ((unsigned int)regs[instruct.rt]) >> instruct.shamt;
+            break; 	// (srl)
+            case 0x03:  
+                regs[instruct.rd] = ((int)regs[instruct.rt]) >> instruct.shamt;
+            break; 	// (sra)
+            case 0x04: 
+                regs[instruct.rd] = ((unsigned int)regs[instruct.rt]) << ((unsigned int)regs[instruct.rs]); 
+            break; 	// (sllv)
+            case 0x06: 
+                regs[instruct.rd] = ((unsigned int)regs[instruct.rt]) >> ((unsigned int)regs[instruct.rs]); 
+            break; 	// (srlv)
+            case 0x07: 
+                regs[instruct.rd] = ((int)regs[instruct.rt]) >> ((int)regs[instruct.rs]); 
+            break; 	// (srav)
+            case 0x2A: 
+                regs[instruct.rd] = (((int)regs[instruct.rs]) < ((int)regs[instruct.rt]))? 1:0; 
+            break; 	// (slt)
+            case 0x2B: 
+                regs[instruct.rd] = (((unsigned int)regs[instruct.rs]) < ((unsigned int)regs[instruct.rt]))? 1:0; 
+            break; 	// (sltu)
+            case 0x08: 
+                
+            break; 	// (jr)
             case 0x09: break; 	// (jalr)
             case 0x1A: break; 	// (div)
             case 0x1B: break; 	// (divu)
             case 0x18: break; 	// (mult)
             case 0x19: break; 	// (multu)
-         }
-         break;
+      }
+      break;
 
       case('i') :
          switch (instruct.opcode) {
@@ -207,6 +241,15 @@ void execute(INST instruct, REG regs[]) {
                        break;
          }
          break;
+      break;
+   case('i'):
+      break;
+   case('s'):
+      break;
+   case('b'):   //do nothing for branch its already done
+      break;
+   case('j'):   //do nothing for jump its already done too
+      break;   
 
       case('j') : //do nothing for jump its already done too
          break;   
