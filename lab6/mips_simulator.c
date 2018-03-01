@@ -7,28 +7,30 @@
 MIPS mem[1024];	
 //=================== Prototypes
 void printRegisters(REG* regs);
-int runSimulator(char mode, int memp, REG regs[], int pc);
+int runSimulator(char mode, int memp, REG regs[], int pc, int* inst_ran, int* clocks, int* mem_ref);
 
 
 
 
-int runSimulator(char mode, int memp, REG regs[], int pc) {
+int runSimulator(char mode, int memp, REG regs[], int pc, int* inst_ran, int* clocks, int* mem_ref) {
    INST instruct;
    if (mode == 's') {
       //run one instruction and print
       if (pc >= memp) {
          printf("Done\n\n");
+         printf("Instructions ran %d\nClock cycles used: %d\nTimes referenced memory %d\n\n", *inst_ran, *clocks, *mem_ref);
          exit(0);
       }
       else {
-         pc = readNextInst(memp, regs, pc, instruct);
-         printValues(instruct);
+         pc = readNextInst(memp, regs, pc, instruct, inst_ran, clocks, mem_ref);
+         printRegisters(regs); 
       }
    } else if (mode == 'r') {
       //run all instructions and print only end result
-      pc = readInstructions(memp, regs, pc, instruct);
+      pc = readInstructions(memp, regs, pc, instruct, inst_ran, clocks, mem_ref);
       printRegisters(regs);     //prints final register values not values? 
       printf("\n\n");
+      printf("Instructions ran %d\nClock cycles used: %d\nTimes referenced memory %d\n\n", *inst_ran, *clocks, *mem_ref);
       exit(0);
    }
    else {
@@ -79,6 +81,9 @@ int main(int argc, char *argv[]) {
    int memp;                                                                     //Size of pulled instructions
    int pc = 0;
    REG regs[32] = {0};
+   int inst_ran = 0;
+   int clocks = 0;
+   int mem_ref = 0;
 
    checkInputs(argc, argv);
    memp = checkFile(argv, mem, sizeof(mem));
@@ -90,9 +95,10 @@ int main(int argc, char *argv[]) {
 
       if (ch == 'x') {
          printf("Exiting.\n");
+         printf("Instructions ran %d\nClock cycles used: %d\nTimes referenced memory %d\n\n", inst_ran, clocks, mem_ref);
          break;
       }
-      pc = runSimulator(ch, memp, regs, pc);
+      pc = runSimulator(ch, memp, regs, pc, &inst_ran, &clocks, &mem_ref);
       while ((t = getchar()) != EOF && t != '\n'); 								//loop through rest of stdin
    }
 }

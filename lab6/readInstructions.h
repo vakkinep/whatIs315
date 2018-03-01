@@ -36,12 +36,12 @@ unsigned int eff_addr_load(MIPS ir);
 int reg_s(MIPS ir);
 int reg_t(MIPS ir);
 int reg_d(MIPS ir);
-int readInstructions(int memp, REG reg[], int pc, INST instruct);
-int readNextInst(int memp, REG regs[], int pc, INST instruct);
+int readInstructions(int memp, REG reg[], int pc, INST instruct, int* inst_ran, int* clocks, int* mem_ref);
+int readNextInst(int memp, REG regs[], int pc, INST instruct, int* inst_ran, int* clocks, int* mem_ref);
 void printValues(INST instruction);
 void execute(INST instruction, REG regs[]);
 int execute_branch(INST instruct, REG regs[], int pc);
-int execute_jump(INST instruct, REG regs[], int pc);
+int execute_jump(INST instruct, REG regs[], int pc, int* clocks);
 //void printValues(INST instruction);
 
 #endif
