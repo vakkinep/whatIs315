@@ -12,6 +12,7 @@ int runSimulator(char mode, int memp, REG regs[], int pc) {
       //run one instruction and print
    		if (pc>=memp) {
    			printf("Done\n");
+   			exit(0);
    		}
    	  else {
    	  	pc = readNextInst(memp, regs, pc, instruct);
@@ -21,6 +22,7 @@ int runSimulator(char mode, int memp, REG regs[], int pc) {
       //run all instructions and print only end result
    	  pc = readInstructions(memp, regs, pc, instruct);
    	   printValues(instruct);
+   	   exit(0);
    }
    else {
       printf("ERROR - USAGE \n\t 'r' - run \n\t 's' - single step\n\n");
