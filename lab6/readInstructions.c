@@ -32,7 +32,7 @@ void execute(INST instruction, int ir);
   }*/
 
 int readInstructions(int memp, REG regs[], int pc, INST instruct) {
-   while( pc<memp ) {	                                                 /* i contains byte offset addresses */
+   while(pc < memp) {	                                       /* While the pc is less than total instructions*/
       pc = readNextInst(memp, regs, pc, instruct);								//increment pc inside for jump and branch
    }
    printf("\n\n");
@@ -44,7 +44,7 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
    printf("\n@PC=%08X, ", pc);
 
    instruct.opcode = op_code(curr_instruction);		                         //Print Opcode
-   instruct.type = type(instruct.opcode, curr_instruction);			         //Print instruction type
+   instruct.type   = type(instruct.opcode, curr_instruction);			         //Print instruction type
 
    //if R-Type
    if (instruct.type == 'r') { 
@@ -84,6 +84,7 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
    if (instruct.type == 's') {
       eff_addr_ls(curr_instruction);
    }     
+
    return pc+4;																	//increment pc
 }
 
@@ -106,13 +107,11 @@ int imm_val(MIPS ir) {                                                          
    int sign;
 
    imm_val = (ir & 0x0000FFFF); 
-   printf("Imm=0x%04X, ", imm_val);
 
    sign = (imm_val & 0x00008000);
    if (sign) {
       sign_ext = (imm_val | 0xFFFF0000);
    }
-   printf("signext: 0x%08X (%d)", sign_ext, (int) sign_ext);
    return imm_val;
 }
 
@@ -127,7 +126,13 @@ int func_code(MIPS ir) {                                                        
    unsigned int func_code;
 
    func_code = (ir & 0x0000003F);
-   return func_code;
+
+   if (func_code == 0x20 || func_code == 0x21 || func_code == 0x22 || func_code == 0x23 || func_code == 0x24 || func_code == 0x27 || func_code == 0x25 || func_code == 0x26 || func_code == 0x00 || func_code == 0x02 || func_code == 0x03 || func_code == 0x04 || func_code == 0x06 || func_code == 0x07 || func_code == 0x2A || func_code == 0x2B || func_code == 0x08 || func_code == 0x09 || func_code == 0x1A || func_code == 0x1B || func_code == 0x18 || func_code == 0x19) {
+      return func_code;
+   }
+   else {
+      return 0;
+   }
 }
 
 void execute(INST instruct, int ir) {
@@ -155,7 +160,7 @@ void execute(INST instruct, int ir) {
       case 0x18: break; 	// (mult)
       case 0x19: break; 	// (multu)
       default:
-                 printf("0x%08X - Invalid Instruction.", ir);
+                 printf("FUNCTION 0x%08X - Invalid Instruction.", ir);
    }
 }
 
@@ -170,14 +175,13 @@ unsigned int jmp_addr(MIPS ir) {                                                
    unsigned int jmp_addr;
 
    jmp_addr = (ir & 0x03FFFFFF);
-   //printf("addr=0x%06X \n", jmp_addr);
 
    jmp_addr <<= 2;	
    return jmp_addr;
 }
 
 char type(unsigned int op_code, MIPS ir) {
-   if (ir == 0) {
+   if (ir == 0) {                      //nop check
       return 'n';
    }
    switch(op_code) {
@@ -208,7 +212,7 @@ char type(unsigned int op_code, MIPS ir) {
       case 0x3D: return 's';		// I Type (sdcl) 
       default:
                  printf("0x%08X - Invalid Instruction.\n", ir);
-                 return '0';
+                 return 'x';
    }
 }
 

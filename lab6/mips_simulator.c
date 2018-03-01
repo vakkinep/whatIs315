@@ -5,13 +5,19 @@
 
 //=================== GLOBAL VARIABLES
 MIPS mem[1024];	
+//=================== Prototypes
+void printRegisters(REG* regs);
+int runSimulator(char mode, int memp, REG regs[], int pc);
+
+
+
 
 int runSimulator(char mode, int memp, REG regs[], int pc) {
    INST instruct;
    if (mode == 's') {
       //run one instruction and print
-      if (pc>=memp) {
-         printf("Done\n");
+      if (pc >= memp) {
+         printf("Done\n\n");
          exit(0);
       }
       else {
@@ -21,13 +27,24 @@ int runSimulator(char mode, int memp, REG regs[], int pc) {
    } else if (mode == 'r') {
       //run all instructions and print only end result
       pc = readInstructions(memp, regs, pc, instruct);
-      printValues(instruct);
+      printRegisters(regs);     //prints final register values not values? 
+      printf("\n\n");
       exit(0);
    }
    else {
-      printf("ERROR - USAGE \n\t 'r' - run \n\t 's' - single step\n\n");
+      printf("ERROR - USAGE \n\t 'r' - run \n\t 's' - single step\n\t 'x' - exit\n\n");
    }
    return pc;
+}
+
+void printRegisters(REG* regs) {
+   int i = 0;
+   for (i = 0 ; i < 32 ; i++) {
+      if ((i % 3) == 0 && i > 0) {
+         printf("\n");
+      }
+      printf("REG[%2d]:\t 0x%04X\t\t", i, regs[i]);
+   }
 }
 
 /*==================================TO DO======================================
@@ -55,21 +72,19 @@ int runSimulator(char mode, int memp, REG regs[], int pc) {
  *     PrintRegisters(); //Prints out the registers and their contents, useful for single step and end of run
  *     AccessMemory();   //Uses the memory offset to access the memory heap and write or read
  *     
- *     
- *     
- *     
- *     
  */
+
 int main(int argc, char *argv[]) {
    char ch;
    int memp;                                                                     //Size of pulled instructions
    int pc = 0;
    REG regs[32] = {0};
+   //CHECKING INIT OF REGISTERS
+   printRegisters(regs);
 
    checkInputs(argc, argv);
    memp = checkFile(argv, mem, sizeof(mem));
 
-   //printf("\nEnter mode ('r' - run, 's' - single step): \n");
    while ( 1 ) {
       char t;
       printf("\nChoose Mode ('r' - run, 's' - single step, 'x' - exit): ");
