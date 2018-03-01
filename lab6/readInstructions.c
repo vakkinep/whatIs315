@@ -18,7 +18,7 @@ MIPS mem[1024];	                                                       	        
 
 //============PROTOTYPE
 void printValues(INST instruction);
-void execute(INST instruction, int ir);
+void execute(INST instruction);
 
 
 /*int main(int argc, char *argv[]) {
@@ -54,7 +54,7 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
          instruct.rt = reg_t(curr_instruction);
          instruct.rd = reg_d(curr_instruction);
          instruct.shamt = shamt(curr_instruction); 			                         //print shift amount
-         execute(instruct, curr_instruction);
+         execute(instruct);
       }
    }
 
@@ -84,6 +84,10 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct) {
    if (instruct.type == 's') {
       eff_addr_ls(curr_instruction);
    }     
+   
+   if (instruct.func_code || instruct.type != 'r' && instruct.type != 'x') {
+     printValues(instruct);
+   }
 
    return pc+4;																	//increment pc
 }
@@ -131,11 +135,12 @@ int func_code(MIPS ir) {                                                        
       return func_code;
    }
    else {
+      printf("0x%08X - Invalid Instruction.", ir);
       return 0;
    }
 }
 
-void execute(INST instruct, int ir) {
+void execute(INST instruct) {
    switch (instruct.func_code) {
       case 0x20: break; 	// (add)
       case 0x21: break; 	// (addu)
@@ -159,8 +164,6 @@ void execute(INST instruct, int ir) {
       case 0x1B: break; 	// (divu)
       case 0x18: break; 	// (mult)
       case 0x19: break; 	// (multu)
-      default:
-                 printf("FUNCTION 0x%08X - Invalid Instruction.", ir);
    }
 }
 
