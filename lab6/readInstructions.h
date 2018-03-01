@@ -39,7 +39,7 @@ int reg_d(MIPS ir);
 int readInstructions(int memp, REG reg[], int pc, INST instruct);
 int readNextInst(int memp, REG regs[], int pc, INST instruct);
 void printValues(INST instruction);
-void execute(INST instruction);
+void execute(INST instruction, REG regs[]);
 //void printValues(INST instruction);
 
 #endif

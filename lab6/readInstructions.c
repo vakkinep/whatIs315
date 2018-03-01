@@ -134,9 +134,10 @@ int func_code(MIPS ir) {                                                        
    }
 }
 
-void execute(INST instruct) {
+void execute(INST instruct, REG regs[]) {
    switch(instruct.type) {
-      case('r') 
+
+      case('r') : 
          switch (instruct.func_code) {
             case 0x20: break; 	// (add)
             case 0x21: break; 	// (addu)
@@ -161,16 +162,54 @@ void execute(INST instruct) {
             case 0x18: break; 	// (mult)
             case 0x19: break; 	// (multu)
          }
-      break;
-   case('i')
-      break;
-   case('s')
-      break;
-   case('b')   //do nothing for branch its already done
-      break;
-   case('j')   //do nothing for jump its already done too
-      break;   
+         break;
 
+      case('i') :
+         switch (instruct.opcode) {
+            case 0x08:  regs[instruct.rt] = ((int) regs[instruct.rs])  + ((int) instruct.immed);  break;	 // I Type (addi) 
+            case 0x09:	
+            regs[instruct.rt] = ((unsigned int) regs[instruct.rs]) + ((unsigned int) instruct.immed); break;   // Type (addiu) 
+            case 0x0C:  
+            regs[instruct.rt] = ((unsigned int) regs[instruct.rs]) & ((unsigned int) instruct.immed); break; 	 // I Type (andi) 
+            case 0x0D:	
+            regs[instruct.rt] = ((unsigned int) regs[instruct.rs]) | ((unsigned int) instruct.immed);break;   // I Type (ori) 
+            case 0x0E:	
+            regs[instruct.rt] = ((unsigned int) regs[instruct.rs]) ^ ((unsigned int) instruct.immed);break;	 // I Type (xori) 
+            case 0x0A:	
+            regs[instruct.rt] =  (((int) regs[instruct.rs]) < ((int) instruct.immed));break;   // I Type (slti) 
+            case 0x0B:	
+            ((unsigned int) regs[instruct.rt]) =  (((unsigned int) regs[instruct.rs]) < ((unsigned int) instruct.immed)); break;	 // I Type (sltiu) 
+         }
+         break;
+
+      case('s') :
+         switch (op_code) {
+            case 0x20: break;		// I Type (lb) 
+            case 0x24: break;		// I Type (lbu) 
+            case 0x21: break;		// I Type (lh) 
+            case 0x25: break;		// I Type (lhu) 
+            case 0x0F: break;		// I Type (lui) 
+            case 0x23: break;		// I Type (lw) 
+            case 0x28: break;		// I Type (sb) 
+            case 0x29: break;		// I Type (sh) 
+            case 0x2B: break;		// I Type (sw) 
+            case 0x31: break;		// I Type (lwcl) 
+            case 0x35: break;		// I Type (ldcl) 
+            case 0x39: break;		// I Type (swcl) 
+            case 0x3D: break;		// I Type (sdcl) 
+         }
+         break;
+
+      case('b') : 
+         switch (op_code) {
+            case 0x04: return 'b';		// I Type (beq) 
+            case 0x05: return 'b';		// I Type (bne) 
+                       break;
+         }
+         break;
+
+      case('j') : //do nothing for jump its already done too
+         break;   
    }
 }
 
