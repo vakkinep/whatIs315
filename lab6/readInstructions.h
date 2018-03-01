@@ -22,7 +22,7 @@ int reg_s(MIPS ir);
 int reg_t(MIPS ir);
 int reg_d(MIPS ir);
 void readInstructions(int memp, REG reg[]);
-void printRegRS(MIPS ir);
+int readNextInst(int memp, REG regs[], int pc);
 //void printValues(INST instruction);
 
 #endif

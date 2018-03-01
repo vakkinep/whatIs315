@@ -45,3 +45,19 @@ int runSimulator(char mode) {
 *     
 *     
 */
+int main(int argc, char *argv[]) {
+	char ch;
+	//printf("\nEnter mode ('r' - run, 's' - single step): \n");
+	while ( 1 ) {
+		char t;
+		printf("\nChoose Mode ('r' - run, 's' - single step, 'x' - exit): ");
+		ch=getchar();
+	
+		if (ch == 'x') {
+			printf("Exiting.\n");
+			break;
+		}
+		runSimulator(ch);
+		while ((t = getchar()) != EOF && t != '\n'); 								//loop through rest of stdin
+	}
+}
