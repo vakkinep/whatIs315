@@ -1,7 +1,4 @@
-1. Clean up readInstructions.c
-2. Write out the MIPS Simulator skeleton
 3. Make the files communicate 
-4. Replace print statements with actual return values
 5. Write out the logic for the commands
 6. Count cycles, instructions, and memory references
 7. Add single step and full run mode
