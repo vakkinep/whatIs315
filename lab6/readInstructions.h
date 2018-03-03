@@ -43,5 +43,6 @@ void execute(INST instruction, REG regs[]);
 int execute_branch(INST instruct, REG regs[], int pc);
 int execute_jump(INST instruct, REG regs[], int pc, int* clocks);
 //void printValues(INST instruction);
+int syscall(REG* regs);
 
 #endif

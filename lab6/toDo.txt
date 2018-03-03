@@ -1,4 +1,3 @@
-3. Make the files communicate 
-5. Write out the logic for the commands
-6. Count cycles, instructions, and memory references
-7. Add single step and full run mode
+1.    Take in .word?
+2.    Implement syscall 
+3.    

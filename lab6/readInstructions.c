@@ -40,6 +40,11 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct, int* inst_ran, int
          instruct.shamt = shamt(curr_instruction);
          (*clocks) += 4;
       }
+
+      if (instruct.func_code == 0x08 | instruct.func_code == 0x09) {
+         instruct.jmp_addr = regs[instruct.rs];
+         return execute_jump(instruct, regs, pc, clocks);
+      }
    }
 
    //if I-Type, print immediate value
@@ -59,14 +64,8 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct, int* inst_ran, int
    //if J-Type, print Jump Address
    if (instruct.type == 'j') {
       instruct.jmp_addr = jmp_addr(curr_instruction);
-      return execute_jump(instruct, regs, pc, clocks);
 
-      if (instruct.opcode == 0x03) {
-         regs[31] = pc + 4;
-         (*clocks) += 1;
-      }
-      (*clocks) -= 1;
-      return (pc = instruct.jmp_addr);
+      return execute_jump(instruct, regs, pc, clocks);
    }
 
    //if Store/load I-Type
@@ -78,13 +77,21 @@ int readNextInst(int memp, REG regs[], int pc, INST instruct, int* inst_ran, int
       instruct.eff_addr = eff_addr_load(curr_instruction);
    }     
 
-   if (instruct.func_code && instruct.type != 'x') {
+
+   if (instruct.func_code && instruct.type != 'x') {        //if its a valid command and changes things
       execute(instruct, regs);
    }
 
    if (instruct.type == 'n') {
       (*clocks) += 3;
    }
+
+   if (curr_instruction == 0x0000000C) {
+      if (syscall(regs)) {
+         return memp;
+      }
+   }
+   
    return pc+4;
 }
 
@@ -136,7 +143,7 @@ int func_code(MIPS ir) {                                                        
 
    func_code = (ir & 0x0000003F);
 
-   if (func_code == 0x20 || func_code == 0x21 || func_code == 0x22 || func_code == 0x23 || func_code == 0x24 || func_code == 0x27 || func_code == 0x25 || func_code == 0x26 || func_code == 0x00 || func_code == 0x02 || func_code == 0x03 || func_code == 0x04 || func_code == 0x06 || func_code == 0x07 || func_code == 0x2A || func_code == 0x2B || func_code == 0x08 || func_code == 0x09 || func_code == 0x1A || func_code == 0x1B || func_code == 0x18 || func_code == 0x19) {
+   if (func_code == 0x0C || func_code == 0x20 || func_code == 0x21 || func_code == 0x22 || func_code == 0x23 || func_code == 0x24 || func_code == 0x27 || func_code == 0x25 || func_code == 0x26 || func_code == 0x00 || func_code == 0x02 || func_code == 0x03 || func_code == 0x04 || func_code == 0x06 || func_code == 0x07 || func_code == 0x2A || func_code == 0x2B || func_code == 0x08 || func_code == 0x09 || func_code == 0x1A || func_code == 0x1B || func_code == 0x18 || func_code == 0x19) {
       return func_code;
    }
    else {
@@ -146,7 +153,7 @@ int func_code(MIPS ir) {                                                        
 }
 
 int execute_jump(INST instruct, REG regs[], int pc, int* clocks) {
-   if (instruct.opcode == 0x03) {
+   if (instruct.opcode == 0x03 | instruct.func_code == 0x09) {      //if jal/jalr
       regs[31] = pc + 4;
       (*clocks) += 1;
    }
@@ -156,12 +163,10 @@ int execute_jump(INST instruct, REG regs[], int pc, int* clocks) {
 
 int execute_branch(INST instruct, REG regs[], int pc) {
    if (instruct.opcode == 0x04 && instruct.rs == instruct.rt) { //beq
-      regs[31] = pc + 4;
       instruct.brn_addr = pc + eff_addr(pc, instruct.immed);
       return (pc = instruct.brn_addr);
    }
    else if (instruct.opcode == 0x05 && instruct.rs != instruct.rt) { //bne
-      regs[31] = pc + 4;
       instruct.brn_addr = pc + eff_addr(pc, instruct.immed);
       return (pc = instruct.brn_addr);
    }
@@ -410,4 +415,14 @@ void printValues(INST instruction) {                                            
       case ('j') : printf("jmp_addr=0x%06X\n", instruction.jmp_addr); break;
       case ('n') : break;                                  
    }
+}
+
+int syscall(REG* regs) {
+   if (regs[2] == 10) {
+      return 1; 
+   }
+   if (regs[2] == 1) {
+      printf("%d\n", regs[4]);   
+   }
+   return 0;
 }
