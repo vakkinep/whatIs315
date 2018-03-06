@@ -1,6 +1,8 @@
 A list of things left to do:
-1.
-2.
-3.
-4.
-5.
+1. Create functions for the stages of the pipeline
+2. Create loop for the program to repeat
+3. Create flags for halt/busy/etc.
+4. Statistics for total processes
+5. Set termination of program in EX syscall of $v0 to 10
+6. Create struct to pass as inbox
+7. Create init function to set everything to -1 for nop
