@@ -1,0 +1,31 @@
+i_if
+i_id							//inbox for decode = outbox for fetch
+i_ex
+i_mem
+i_wb
+
+for() {
+
+	wb(i_wb);					//run wb
+	i_wb.busy = 0;
+
+	if (!i_wb.busy) {			//if wb not busy
+		i_wb = mem(i_mem);		//run mem, store in wb out
+		i_mem.busy = 0;			//set mem busy bit to not busy
+	}
+
+	if (!i_mem.busy) {
+		i_mem = ex(i_ex);
+		i_ex.busy = 0;
+	}
+
+	if (!i_ex.busy) {
+		i_ex = id(i_id);
+		i_id.busy = 0;
+	}
+
+	if (!id.busy) {
+		i_busy = ifetch(i_if);
+		i_if.busy = 0;
+	}
+}
