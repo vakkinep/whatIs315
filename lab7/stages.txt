@@ -29,3 +29,23 @@ for() {
 		i_if.busy = 0;
 	}
 }
+
+
+Fetch
+- pull instruction from mem array using pc
+- increment pc
+
+Decode
+- takes instruction and decodes type, grabs pertinent information
+- passes on pc
+
+Execute
+- ALU stuff!!
+- add, add offset to pc (branch), etc.
+
+Memory
+- write to and read from actual memory (load and store)
+- determines what pc will load next (branch, jump)
+
+Write Back
+- writes values back to registers 
