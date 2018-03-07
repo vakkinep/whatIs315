@@ -412,7 +412,7 @@ void printValues(INST instruction) {                                            
          printReg(instruction.rs, "rs");
          printf("] + 0x%08X\n",sign_ext(instruction));
          break;                                             
-      case ('j') : printf("jmp_addr=0x%06X\n", instruction.jmp_addr); break;
+      case ('j') : printf("jmp_addr=0x4%07X\n", instruction.jmp_addr); break;
       case ('n') : break;                                  
    }
 }
