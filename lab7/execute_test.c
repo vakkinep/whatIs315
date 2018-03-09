@@ -65,7 +65,8 @@ int main(int argc, char *argv[]) {
 	printf("added result: %d\n\n", result.rd_value);
 
 	instruct = setup_inst_addi(instruct);
-	result = execute(instruct);
 	printValues(instruct);
-	printf("added immed result: %d\n\n", result.rd_value);
+	result = execute(instruct);
+	printValues(result);
+	printf("added immed result: %d\n\n", result.rt_value);
 }
