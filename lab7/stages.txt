@@ -30,7 +30,7 @@ for() {
 	}
 }
 
-
+AUSTIN===================================================
 Fetch
 - pull instruction from mem array using pc
 - increment pc
@@ -38,10 +38,15 @@ Fetch
 Decode
 - takes instruction and decodes type, grabs pertinent information
 - passes on pc
+===========================================================
 
+JENNA=====================================================
 Execute
 - ALU stuff!!
 - add, add offset to pc (branch), etc.
+===========================================================
+
+VINNIE====================================================
 
 Memory
 - write to and read from actual memory (load and store)
@@ -49,3 +54,4 @@ Memory
 
 Write Back
 - writes values back to registers 
+============================================================
