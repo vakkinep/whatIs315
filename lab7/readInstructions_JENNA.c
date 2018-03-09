@@ -128,7 +128,7 @@ INST execute_s_helper(INST instruct) {
       case 0x28:  // I Type (sb) 
       case 0x29:  // I Type (sh) 
       case 0x2B:  // I Type (sw) 
-         instruct_heap_addr = instruct.rs + instruct.eff_addr;
+         instruct.heap_addr = instruct.rs + instruct.eff_addr;
          break; 
    }
    return instruct;
@@ -182,12 +182,13 @@ INST execute(INST instruct) {
 
    else if (instruct.type == 'j') {    //Jump Type
       return execute_j_helper(instruct);
-   }   
-   return instruct;
+   }  else { 
+      return instruct;
+   }
 }
 
 
-INST mem(INST instruct) {
+INST memory(INST instruct) {
    if (instruct.type == 's') {      //Load and Store 
       switch (instruct.opcode) {
          case 0x20:           // I Type (lb) 
@@ -219,7 +220,9 @@ INST mem(INST instruct) {
             break; 
          }
 
-   } else if (instruct.type == 'b') {  //Branch
+   }
+
+   if (instruct.type == 'b') {  //Branch
       switch (instruct.opcode) {
          case 0x04:     // I Type (beq) 
             if (instruct.rs == instruct.rt) {
@@ -231,12 +234,16 @@ INST mem(INST instruct) {
                instruct.pc = instruct.brn_addr;    //set pc to branch address
             }
             break;
+      }
 
-   } else if (instruct.type == 'j') {     //Jump
-      switch (instruct.opcode) {
+   }
+
+   if (instruct.type == 'j') {     //Jump
          if (instruct.opcode == 0x03) {  // (jal)
             instruct.ra = instruct.pc + 4;
          }
          instruct.pc = instruct.jmp_addr;
    }
+
+   return instruct;
 }
