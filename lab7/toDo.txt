@@ -4,5 +4,5 @@ A list of things left to do:
 3. Create flags for halt/busy/etc.
 4. Statistics for total processes
 5. Set termination of program in EX syscall of $v0 to 10
-6. Create struct to pass as inbox
+6. Create flush for fetch decode execute when brn or j are in mem
 7. Create init function to set everything to -1 for nop
