@@ -60,6 +60,7 @@ INST decode(INST instruct, REG regs[]) {
       instruct.rs = 2;
       instruct.rs_value = regs[instruct.rs]; 
    }
+   return instruct;
 }
 
 //============= Execute ================================================================================
