@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "readInstructions.h"
+#include "pipelined.h"
 
 //================== Global Variables
 MIPS mem[1024];	
@@ -61,12 +61,11 @@ int main(int argc, char *argv[]) {
 
 	instruct = setup_inst_add(instruct);
 	result = execute(instruct);
-	printValues(instruct);
+	//printValues(instruct);
 	printf("added result: %d\n\n", result.rd_value);
 
 	instruct = setup_inst_addi(instruct);
-	printValues(instruct);
 	result = execute(instruct);
-	printValues(result);
-	printf("added immed result: %d\n\n", result.rt_value);
+	//printValues(instruct);
+	printf("added immed result: %d\n\n", result.rd_value);
 }

@@ -36,5 +36,16 @@ char type(unsigned int op_code, MIPS ir);
 int reg_s(MIPS ir);
 int reg_t(MIPS ir);
 int reg_d(MIPS ir);
+INST execute(INST instruct);
+INST execute_r_helper(INST instruct);
+INST execute_i_helper(INST instruct);
+INST execute_b_helper(INST instruct);
+INST execute_s_helper(INST instruct);
+INST execute_j_helper(INST instruct);
+int eff_addr(int pc, int imm_value);
+unsigned int jmp_addr(MIPS ir);
+unsigned int eff_addr_load(MIPS ir);
+
+
 
 #endif

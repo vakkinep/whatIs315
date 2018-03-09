@@ -107,10 +107,10 @@ INST execute_r_helper(INST instruct) {
 }
 
 INST execute_i_helper(INST instruct) {
+	printf("opcode = %d\n", instruct.opcode);
    switch (instruct.opcode) {
       case 0x08:   // I Type (addi) 
          instruct.rt_value = (int) instruct.rs_value  + (int) instruct.immed;
-         printf("******rs (%d) + immed (%d) = rt (%d)\n", instruct.rs_value, instruct.immed, instruct.rt_value);  
          break;    
       case 0x09:  // Type (addiu)
          instruct.rt_value = (unsigned int) instruct.rs_value + (unsigned int) instruct.immed; 
