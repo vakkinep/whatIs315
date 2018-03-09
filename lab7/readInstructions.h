@@ -14,6 +14,7 @@ typedef unsigned int REG, *REG_PTR;
 
 typedef struct INSTRUCTION {
     unsigned int  pc;
+    MIPS          curr_instruction;
     char          type;
     unsigned int  opcode;
     unsigned int  rs;
@@ -55,7 +56,6 @@ void printValues(INST instruction);
 INST execute(INST instruction);
 int execute_branch(INST instruct, REG regs[], int pc);
 int execute_jump(INST instruct, REG regs[], int pc, int* clocks);
-//void printValues(INST instruction);
 int syscall(REG* regs);
 
 #endif
