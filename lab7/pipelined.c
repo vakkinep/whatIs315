@@ -3,29 +3,30 @@
 #include <string.h>
 #include "pipelined.h"
 
-INST fetch(INST instruct, MIPS mem) {
+INST fetch(INST instruct, MIPS mem[]) {
    instruct.curr_instruction = mem[instruct.pc];    // grab current instruction from prog_rom
    instruct.pc += 4;                                // increment pc
    return instruct;
 }
+
 //=============================================================================================
 
 INST decode(INST instruct, REG regs[]) {
    instruct.opcode = op_code(instruct.curr_instruction);
-   instruct.type = type(insturct.opcode, instruct.curr_instruction);
+   instruct.type = type(instruct.opcode, instruct.curr_instruction);
 
    //if R-Type
    if (instruct.type == 'r') { 
       instruct.func_code = func_code(instruct.curr_instruction);
       if (instruct.func_code) {		
          instruct.rs = reg_s(instruct.curr_instruction);
-         instruct.rs_value = reg[instruct.rs];
+         instruct.rs_value = regs[instruct.rs];
 
          instruct.rt = reg_t(instruct.curr_instruction);
-         instruct.rt_value = reg[instruct.rt];
+         instruct.rt_value = regs[instruct.rt];
 
          instruct.rd = reg_d(instruct.curr_instruction);
-         instruct.rd_value = reg[instruct.rd];
+         instruct.rd_value = regs[instruct.rd];
 
          instruct.shamt = shamt(instruct.curr_instruction);
       }
@@ -39,17 +40,18 @@ INST decode(INST instruct, REG regs[]) {
    if (instruct.type == 'i'|| instruct.type == 'b' || instruct.type == 's') {
 
       instruct.rs = reg_s(instruct.curr_instruction);
-      instruct.rs_value = reg[instruct.rs]; 
+      instruct.rs_value = regs[instruct.rs]; 
 
       instruct.rt = reg_t(instruct.curr_instruction);
-      instruct.rt_value = reg[instruct.rt];
+      instruct.rt_value = regs[instruct.rt];
 
       instruct.immed = imm_val(instruct.curr_instruction);
+      instruct.sign_ext = sign_extend(instruct);
    }
 
    if (instruct.type = 'y') {
       instruct.rs = 2;
-      instruct.rs_value = reg[instruct.rs]; 
+      instruct.rs_value = regs[instruct.rs]; 
    }
 }
 
@@ -64,7 +66,7 @@ char type(unsigned int op_code, MIPS ir) {
       return 'n';
    }
    if (ir == 0x0000000C) {
-      return 'y'
+      return 'y';
    }
    switch(op_code) {
       case 0x00: return 'r'; 		// R Type
@@ -124,5 +126,22 @@ unsigned int shamt(MIPS ir) {                                                   
    return ((ir >> 6) & 0x00000001F);    
 }
 
+int imm_val(MIPS ir) {                                                           //I Types
+   return (ir & 0x0000FFFF); 
+}
+
+int sign_extend(INST instruction) {
+   int sign;
+   unsigned int sign_ext;
+
+   sign_ext = instruction.immed;
+   sign = (instruction.immed & 0x00008000);
+
+   if (sign) {
+      sign_ext |= 0xFFFF0000; 
+   }
+
+   return sign_ext;
+}
 //=============================================================================================================
 //=============================================================================================================
