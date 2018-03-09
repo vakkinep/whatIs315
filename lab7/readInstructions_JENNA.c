@@ -16,6 +16,23 @@
 MIPS mem[1024];	                                                       	         /* Room for 4K bytes */
 unsigned int heap[4096];
 
+extern int haltflag;
+
+
+int syscall(unsigned int v0_value) {
+   if (v0_value == 10) {
+      return 1; 
+   }
+   return 0;
+}
+
+int eff_addr(int pc, int imm_value) {                                           //I Types, Branches only
+   int eff_addr;
+
+   eff_addr = pc + imm_value;
+   return eff_addr;
+}
+
 unsigned int jmp_addr(MIPS ir) {                                                         //J Types
    unsigned int jmp_addr;
 
@@ -23,6 +40,12 @@ unsigned int jmp_addr(MIPS ir) {                                                
 
    jmp_addr <<= 2;   
    return jmp_addr;
+}
+
+unsigned int eff_addr_load(MIPS ir) {
+   unsigned int ext_imm = (ir & 0x0000FFFF);
+   ext_imm |= ((ext_imm & 0x8000) ? 0xFFFF0000 : 0);
+   return ext_imm;
 }
 
 INST execute_r_helper(INST instruct) {
@@ -76,44 +99,44 @@ INST execute_r_helper(INST instruct) {
          instruct.rd_value = (unsigned int)instruct.rt_value < ((unsigned int)instruct.rt_value)? 1:0; 
          break;   
       case 0x08:  // (jr)
-         //jump address already calculated, nothing to do
-         break;
       case 0x09:  // (jalr)
-         instruct.ra = instruct.pc + 4;               //save return address
-         //jump address already calculated
+      	 //jump address already calculated
          break;
       }
    return instruct;
 }
 
 INST execute_i_helper(INST instruct) {
+	printf("opcode = %d\n", instruct.opcode);
    switch (instruct.opcode) {
       case 0x08:   // I Type (addi) 
-         instruct.rt_value = (int) instruct.rt_value  + (int) instruct.immed;  
+         instruct.rt_value = (int) instruct.rs_value  + (int) instruct.immed;
+         printf("rs (%d) + immed (%d) = rt (%d)\n", instruct.rs_value, instruct.immed, instruct.rt_value);  
          break;    
       case 0x09:  // Type (addiu)
-         instruct.rt_value = (unsigned int) instruct.rt_value + (unsigned int) instruct.immed; 
+         instruct.rt_value = (unsigned int) instruct.rs_value + (unsigned int) instruct.immed; 
          break;    
       case 0x0C:  // I Type (andi) 
-         instruct.rt_value = (unsigned int) instruct.rt_value & (unsigned int) instruct.immed; 
+         instruct.rt_value = (unsigned int) instruct.rs_value & (unsigned int) instruct.rt_value; 
          break;    
       case 0x0D:  // I Type (ori)
-         instruct.rt_value = (unsigned int) instruct.rt_value | (unsigned int) instruct.immed;
+         instruct.rt_value = (unsigned int) instruct.rs_value | (unsigned int) instruct.immed;
          break;    
       case 0x0E:  // I Type (xori)
-         instruct.rt_value = (unsigned int) instruct.rt_value ^ (unsigned int) instruct.immed;
+         instruct.rt_value = (unsigned int) instruct.rs_value ^ (unsigned int) instruct.immed;
          break;     
       case 0x0A:  // I Type (slti) 
-         instruct.rt_value =  (int) instruct.rt_value < (int) instruct.immed;
+         instruct.rt_value =  (int) instruct.rs_value < (int) instruct.immed;
          break;   
       case 0x0B:  // I Type (sltiu)
-         instruct.rt_value =  (unsigned int) instruct.rt_value < (unsigned int) instruct.immed; 
+         instruct.rt_value =  (unsigned int) instruct.rs_value < (unsigned int) instruct.immed; 
          break;     
    }
    return instruct;
 }
 
 INST execute_s_helper(INST instruct) {
+	instruct.eff_addr = eff_addr_load(instruct.curr_instruction);
    switch (instruct.opcode) {
       case 0x24:  // I Type (lbu) 
       case 0x25:  // I Type (lhu)
@@ -151,38 +174,46 @@ INST execute_b_helper(INST instruct) {
 }
 
 INST execute_j_helper(INST instruct) {
-   switch (instruct.opcode) {
-      case 0x02:  // (j)
-      //Jump address already calculated, nothing to do
-      break;
-      case 0x03:  // (jal)
-      //jump address already calculated
-      break;
-   }
-   return instruct;
+    instruct.jmp_addr = jmp_addr(instruct.curr_instruction);
+	return instruct;
 }
 
 
 INST execute(INST instruct) {
    if (instruct.type == 'r') {      //R Types
+   	  printf("R Type\n");
       return execute_r_helper(instruct);
    }
 
    else if (instruct.type == 'i') {    //I Types
-      return execute_i_helper(instruct);
+      printf("I Type\n");
+      return execute_i_helper(instruct); 
    }
 
    else if (instruct.type == 's') {    //Load and Store Types
+      printf("Load and Store\n");
       return execute_s_helper(instruct);
    }
 
    else if (instruct.type == 'b') {    //Branch Type
+      printf("Branch\n");
       return execute_b_helper(instruct);
    }
 
    else if (instruct.type == 'j') {    //Jump Type
+   	  printf("Jump\n");
       return execute_j_helper(instruct);
-   }  else { 
+   }  
+
+   else if (instruct.curr_instruction == 0x0000000C) { //HALT
+   		printf("Syscall\n");
+      if (syscall(instruct.rs_value)) {
+      	 haltflag = 1;
+         return instruct;
+      }
+   }
+   else { 
+   		printf("Could not find type\n");
       return instruct;
    }
 }
@@ -239,11 +270,96 @@ INST memory(INST instruct) {
    }
 
    if (instruct.type == 'j') {     //Jump
-         if (instruct.opcode == 0x03) {  // (jal)
-            instruct.ra = instruct.pc + 4;
+         if (instruct.opcode == 0x03 || instruct.func_code == 0x09) {  // (jal, jalr)
+            instruct.ra = instruct.pc;
          }
          instruct.pc = instruct.jmp_addr;
    }
 
    return instruct;
+}
+
+int sign_ext(INST instruction) {
+   int sign;
+   unsigned int sign_ext;
+
+   sign_ext = instruction.immed;
+   sign = (instruction.immed & 0x00008000);
+
+   if (sign) {
+      sign_ext |= 0xFFFF0000; 
+   }
+
+   return sign_ext;
+}
+
+int reg_s(MIPS ir) {
+   int rs = (ir >> 21) & 0x1F;
+   return rs;
+}
+
+int reg_t(MIPS ir) {
+   int rt = (ir >> 16) & 0x1F;
+   return rt;
+}
+
+int reg_d(MIPS ir) {
+   int rd = (ir >> 11) & 0x1F;
+   return rd;
+}
+
+void printReg(int reg, char* title) { //title will be which register (rs, rt, rd)
+   int name;
+   if (reg == 0) {
+      printf("%s=%d ($zero), ", title, reg);
+   } else if (reg <= 3) {
+      name= reg - 2;
+      printf("%s=%d ($v%d), ", title, reg, name);
+   } else if (reg <= 7) {
+      name= reg - 4;
+      printf("%s=%d ($a%d), ", title, reg, name);
+   } else if (reg <= 15) {
+      name= reg - 8;
+      printf("%s=%d ($t%d), ", title, reg, name);
+   } else if (reg <= 23) {
+      name= reg - 16;
+      printf("%s=%d ($s%d), ", title, reg, name);
+   } else if (reg == 31) {
+      printf("%s=%d ($ra), ", title, reg);
+   }
+}
+
+void printValues(INST instruction) {                                             // Prints the instruction values
+   printf("OPCODE: 0x%02X\tTYPE: %c\n",instruction.opcode, instruction.type);
+   switch (instruction.type) {
+      case ('r') : 
+         printf("values: \n");                                 
+         printReg(instruction.rs, "rs");
+         printReg(instruction.rt, "rt");
+         printReg(instruction.rd, "rd");
+         printf("\n");
+         printf("SHAMT: %d\t FUNCTION: 0x%02X\n", instruction.shamt, instruction.func_code);
+         break;
+      case ('i') :                                            
+         printf("values: \n");
+         printReg(instruction.rs, "rs");
+         printReg(instruction.rt, "rt");
+         printf("Immed value: 0x%04X\n", instruction.immed);
+         break;
+      case ('b') : 
+         printf("values: \nBranch Address: 0x%08X\n", instruction.brn_addr);
+         break;                                              
+      case ('s') : 
+         printf("values: \n");
+         printReg(instruction.rs, "rs");
+         printReg(instruction.rt, "rt");
+         printf("Immed value: 0x%04X\t", instruction.immed);
+         printf("Sign Ext: 0x%08X\n", sign_ext(instruction));
+         printf("EffAddr=R[ ");
+         printReg(instruction.rs, "rs");
+         printf("] + 0x%08X\n",sign_ext(instruction));
+         break;                                             
+      case ('j') : printf("jmp_addr=0x%06X\n", instruction.jmp_addr); break;
+      case ('n') : break;                                  
+   }
 }
