@@ -89,9 +89,9 @@ INST execute(INST instruct) {
       return execute_j_helper(instruct);
    }  
 
-   else if (instruct.curr_instruction == 0x0000000C) { //HALT
+   else if (instruct.type == 'y') { //HALT
       //printf("Syscall\n");
-      if (syscall(instruct.rs_value)) {
+      if (instruct.rs_value == 10) {
           haltflag = 1;
          return instruct;
       }
