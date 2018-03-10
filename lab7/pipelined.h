@@ -40,7 +40,7 @@ int reg_d(MIPS ir);
 INST fetch(INST instruct, MIPS mem[]);
 INST decode(INST instruct, REG regs[]);
 INST memory(INST instruct);
-INST execute(INST instruct);
+INST execute(INST instruct, int* inst_ran);
 INST execute_r_helper(INST instruct);
 INST execute_i_helper(INST instruct);
 INST execute_b_helper(INST instruct);

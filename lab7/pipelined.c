@@ -7,13 +7,12 @@
 extern MIPS mem[1024];                                      /* Room for 4K bytes */
 extern unsigned int heap[4096];
 extern int haltflag;
-
 //============== Fetch ===============================================================================================
 
 INST fetch(INST instruct, MIPS mem[]) {
    instruct.curr_instruction = mem[instruct.pc];    // grab current instruction from prog_rom
-   instruct.pc += 4;                                // increment pc
-   printf("INST CODE = 0x%08X\n", instruct.curr_instruction);
+   instruct.pc += 1;                                // increment pc
+   printf("FETCHING = 0x%08X\n", instruct.curr_instruction);
    return instruct;
 }
 
@@ -37,6 +36,8 @@ INST decode(INST instruct, REG regs[]) {
          instruct.rd_value = regs[instruct.rd];
 
          instruct.shamt = shamt(instruct.curr_instruction);
+      } else {
+         instruct.type = 'x';
       }
       //jr/jalr
       if (instruct.func_code == 0x08 | instruct.func_code == 0x09) {
@@ -66,7 +67,10 @@ INST decode(INST instruct, REG regs[]) {
 
 //============= Execute ================================================================================
 
-INST execute(INST instruct) {
+INST execute(INST instruct,int* instructions) {
+   if (instruct.type != 'x') {
+      (*instructions)++;
+   }
    if (instruct.type == 'r') {      //R Types
       //printf("R Type\n");
       return execute_r_helper(instruct);
@@ -92,12 +96,11 @@ INST execute(INST instruct) {
    }
 
    else if (instruct.type == 'y') { //HALT
-      printf("Syscall for IR %d\n", instruct.curr_instruction);
-          haltflag = 1;
+         printf("Syscall HALTING %d\n", instruct.curr_instruction);
+         haltflag = 1;
          return instruct;
    }
    else {
-      //printf("Could not find type\n");
       return instruct;
    }
 }
@@ -169,7 +172,7 @@ INST memory(INST instruct) {
 //================== Write back ==============================================================================
 
 INST writeback(INST instruct, REG regs[]) {
-    //TODO jump and link and jump and link register
+    //jump and link and jump and link register
     if (instruct.func_code == 0x08 | instruct.func_code == 0x09) {
        regs[31] = instruct.ra;
     }
@@ -177,7 +180,7 @@ INST writeback(INST instruct, REG regs[]) {
     if (instruct.type == 'r') {
         regs[instruct.rd] = instruct.rd_value;
     }
-    //i types store in a different place
+    //i type s store in a different place
     if (instruct.type == 'i') {
         regs[instruct.rt] = instruct.rt_value;
     }
@@ -354,7 +357,7 @@ INST execute_i_helper(INST instruct) {
          break;
       case 0x0E:  // I Type (xori)
          instruct.rt_value = (unsigned int) instruct.rs_value ^ (unsigned int) instruct.immed;
-         break;
+         break; 
       case 0x0A:  // I Type (slti)
          instruct.rt_value =  (int) instruct.rs_value < (int) instruct.immed;
          break;
@@ -404,7 +407,8 @@ INST execute_b_helper(INST instruct) {
 }
 
 INST execute_j_helper(INST instruct) {
-    instruct.jmp_addr = jmp_addr(instruct.curr_instruction);
+   printf("Going into the execute helpter\n");
+   instruct.jmp_addr = jmp_addr(instruct.curr_instruction);
    return instruct;
 }
 
@@ -413,12 +417,8 @@ int eff_addr(int pc, int imm_value) {                                           
 }
 
 unsigned int jmp_addr(MIPS ir) {                                                         //J Types
-   unsigned int jmp_addr;
-
-   jmp_addr = (ir & 0x03FFFFFF);
-
-   jmp_addr <<= 2;
-   return jmp_addr;
+   printf("JUMP ADDR: %08X\n", ((((ir & 0x03FFFFFF) << 2) / 4))); 
+   return ((((ir & 0x03FFFFFF) << 2)/4));
 }
 
 unsigned int eff_addr_load(MIPS ir) {
