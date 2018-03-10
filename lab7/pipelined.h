@@ -36,6 +36,10 @@ char type(unsigned int op_code, MIPS ir);
 int reg_s(MIPS ir);
 int reg_t(MIPS ir);
 int reg_d(MIPS ir);
+
+INST fetch(INST instruct, MIPS mem[]);
+INST decode(INST instruct, REG regs[]);
+INST memory(INST instruct);
 INST execute(INST instruct);
 INST execute_r_helper(INST instruct);
 INST execute_i_helper(INST instruct);

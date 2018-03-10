@@ -8,7 +8,7 @@
 #define STARTCHECKS_H
 
 #include "mips_asm_header.h"
-#include "readInstructions.h"
+#include "pipelined.h"
 
 /*----------Prototypes---------*/
 void checkInputs(int argc, char *argv[]);

@@ -1,6 +1,8 @@
 #ifndef MIPS_ASM_HEADER_H 
 #define MIPS_ASM_HEADER_H 
 
+#include "pipelined.h"
+
 /*----------------------------------------------------------------------*
  *	mips_asm Binary header (.mb) file header format.  This header	*
  *	provides for future information on mips assembler files.	*
@@ -19,5 +21,7 @@ typedef struct _mb_hdr
   unsigned int filler1;		/* Unused ... reserved for future use. */
   unsigned char filler2[64-16];	/* Overall header is 64 bytes */
   } MB_HDR, *MB_HDR_PTR;
+
+  void initialize_inst(INST_PTR instruct);
 
 #endif

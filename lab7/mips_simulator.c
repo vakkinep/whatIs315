@@ -5,7 +5,9 @@
 #include "startChecks.h"
 
 //=================== GLOBAL VARIABLES
-MIPS mem[1024];	
+MIPS mem[1024];
+unsigned int heap[4096];	
+int haltflag;
 //=================== Prototypes
 int runSimulator(int memp, REG regs[], int pc, int* inst_ran, int* clocks, int* mem_ref);
 
@@ -16,18 +18,41 @@ int runSimulator(int memp, REG regs[], int pc, int* inst_ran, int* clocks, int* 
    INST instruct_4;
    INST instruct_5;
 
+   initialize_inst(&instruct_1);
+
       //run all instructions and print only end result
-      for () {
-         writeback(instruct_5);             
-         instruct_5 = mem(instruct_4);             
+      for (haltflag=0; haltflag; *clocks++) {
+         writeback(instruct_5, regs);             
+         instruct_5 = memory(instruct_4);             
          instruct_4 = execute(instruct_3);             
          //IF FLUSH FIND OUT THEN SET 3,2,1 ALL TO NOPS
-         instruct_3 = decode(instruct_2);             
-         instruct_2 = fetch(instruct_1);             
+         instruct_3 = decode(instruct_2, regs);             
+         instruct_2 = fetch(instruct_1, mem);             
       }
       printf("\n\n");
       printf("Instructions ran %d\nClock cycles used: %d\nTimes referenced memory %d\n\n", *inst_ran, *clocks, *mem_ref);
       exit(0);
+}
+
+void initialize_inst(INST_PTR instruct) {
+   instruct->curr_instruction = 0;
+   instruct->pc = 0;
+   instruct->type = 'n'; 
+   instruct->opcode = 0x0;
+   instruct->rs = 0;
+   instruct->rt = 0;
+   instruct->rd = 0;
+   instruct->rs_value = 0;
+   instruct->rt_value = 0;
+   instruct->rd_value = 0;
+   instruct->ra = 0;
+   instruct->heap_addr = 0;
+   instruct->shamt = 0;
+   instruct->func_code = 0x0;
+   instruct->immed = 0;
+   instruct->jmp_addr = 0;
+   instruct->brn_addr = 0;
+   instruct->eff_addr = 0;
 }
 
 int main(int argc, char *argv[]) {

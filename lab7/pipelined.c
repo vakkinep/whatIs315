@@ -4,8 +4,8 @@
 #include "pipelined.h"
 
 //============== Global Variables ===============================================================================
-MIPS mem[1024];                                      /* Room for 4K bytes */
-unsigned int heap[4096];
+extern MIPS mem[1024];                                      /* Room for 4K bytes */
+extern unsigned int heap[4096];
 extern int haltflag;
 
 //============== Fetch ===============================================================================================
@@ -106,6 +106,8 @@ INST execute(INST instruct) {
 //=============== Memory ===================================================================================
 
 INST memory(INST instruct) {
+	if (instruct.type == 'n')
+		return instruct;
    if (instruct.type == 's') {      //Load and Store
       switch (instruct.opcode) {
          case 0x20:           // I Type (lb)
@@ -170,7 +172,7 @@ INST memory(INST instruct) {
 INST writeback(INST instruct, REG regs[]) {
     //TODO jump and link and jump and link register
     if (instruct.func_code == 0x08 | instruct.func_code == 0x09) {
-       regs[31] = instruct.ra
+       regs[31] = instruct.ra;
     }
     //r Types - compare to i Types store in rd
     if (instruct.type == 'r') {
