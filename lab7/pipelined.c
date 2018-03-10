@@ -155,7 +155,7 @@ INST memory(INST instruct) {
 
    }
 
-   if (instruct.type == 'j') {     //Jump
+   if (instruct.type == 'j' || instruct.func_code == 0x09 || instruct.func_code == 0x08) {     //Jump, Jump Register
          if (instruct.opcode == 0x03 || instruct.func_code == 0x09) {  // (jal, jalr)
             instruct.ra = instruct.pc;
          }
