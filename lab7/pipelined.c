@@ -13,6 +13,7 @@ extern int haltflag;
 INST fetch(INST instruct, MIPS mem[]) {
    instruct.curr_instruction = mem[instruct.pc];    // grab current instruction from prog_rom
    instruct.pc += 4;                                // increment pc
+   printf("INST CODE = 0x%08X\n", instruct.curr_instruction);
    return instruct;
 }
 
@@ -56,7 +57,7 @@ INST decode(INST instruct, REG regs[]) {
       instruct.sign_ext = sign_extend(instruct);
    }
 
-   if (instruct.type = 'y') {
+   if (instruct.type == 'y') {
       instruct.rs = 2;
       instruct.rs_value = regs[instruct.rs];
    }
@@ -91,11 +92,9 @@ INST execute(INST instruct) {
    }
 
    else if (instruct.type == 'y') { //HALT
-      //printf("Syscall\n");
-      if (instruct.rs_value == 10) {
+      printf("Syscall for IR %d\n", instruct.curr_instruction);
           haltflag = 1;
          return instruct;
-      }
    }
    else {
       //printf("Could not find type\n");
@@ -198,6 +197,7 @@ char type(unsigned int op_code, MIPS ir) {
       return 'n';
    }
    if (ir == 0x0000000C) {
+   	  printf("found syscall here\n");
       return 'y';
    }
    switch(op_code) {
@@ -223,7 +223,7 @@ char type(unsigned int op_code, MIPS ir) {
       case 0x29: return 's';		// I Type (sh)
       case 0x2B: return 's';		// I Type (sw)
       default:
-                 printf("0x%08X - Invalid Instruction.\n", ir);
+                 printf("0x%08X - Invalid Instruction in type.\n", ir);
                  return 'x';
    }
 }
@@ -237,7 +237,7 @@ int func_code(MIPS ir) {                                                        
       return func_code;
    }
    else {
-      printf("0x%08X - Invalid Instruction.\n", ir);
+      printf("0x%08X - Invalid Instruction in func_code.\n", ir);
       return 0;
    }
 }

@@ -17,21 +17,27 @@ int runSimulator(int memp, REG regs[], int pc, int* inst_ran, int* clocks, int* 
    INST instruct_3;
    INST instruct_4;
    INST instruct_5;
+   haltflag = 0;
 
    initialize_inst(&instruct_1);
-
+   initialize_inst(&instruct_2);
+   initialize_inst(&instruct_3);
+   initialize_inst(&instruct_4);
+   initialize_inst(&instruct_5);
+   printf("entering loop\n");
       //run all instructions and print only end result
-      for (haltflag=0; haltflag; *clocks++) {
+      while (!haltflag) {
          writeback(instruct_5, regs);             
          instruct_5 = memory(instruct_4);             
          instruct_4 = execute(instruct_3);             
          //IF FLUSH FIND OUT THEN SET 3,2,1 ALL TO NOPS
          instruct_3 = decode(instruct_2, regs);             
-         instruct_2 = fetch(instruct_1, mem);             
+         instruct_2 = fetch(instruct_1, mem);
+         instruct_1.pc += 1;         
+         (*clocks)++;
       }
       printf("\n\n");
       printf("Instructions ran %d\nClock cycles used: %d\nTimes referenced memory %d\n\n", *inst_ran, *clocks, *mem_ref);
-      exit(0);
 }
 
 void initialize_inst(INST_PTR instruct) {
