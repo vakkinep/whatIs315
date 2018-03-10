@@ -23,9 +23,9 @@ INST decode(INST instruct, REG regs[]) {
    instruct.type = type(instruct.opcode, instruct.curr_instruction);
 
    //if R-Type
-   if (instruct.type == 'r') { 
+   if (instruct.type == 'r') {
       instruct.func_code = func_code(instruct.curr_instruction);
-      if (instruct.func_code) {		
+      if (instruct.func_code) {
          instruct.rs = reg_s(instruct.curr_instruction);
          instruct.rs_value = regs[instruct.rs];
 
@@ -47,7 +47,7 @@ INST decode(INST instruct, REG regs[]) {
    if (instruct.type == 'i'|| instruct.type == 'b' || instruct.type == 's') {
 
       instruct.rs = reg_s(instruct.curr_instruction);
-      instruct.rs_value = regs[instruct.rs]; 
+      instruct.rs_value = regs[instruct.rs];
 
       instruct.rt = reg_t(instruct.curr_instruction);
       instruct.rt_value = regs[instruct.rt];
@@ -58,7 +58,7 @@ INST decode(INST instruct, REG regs[]) {
 
    if (instruct.type = 'y') {
       instruct.rs = 2;
-      instruct.rs_value = regs[instruct.rs]; 
+      instruct.rs_value = regs[instruct.rs];
    }
    return instruct;
 }
@@ -73,7 +73,7 @@ INST execute(INST instruct) {
 
    else if (instruct.type == 'i') {    //I Types
       //printf("I Type\n");
-      return execute_i_helper(instruct); 
+      return execute_i_helper(instruct);
    }
 
    else if (instruct.type == 's') {    //Load and Store Types
@@ -88,7 +88,7 @@ INST execute(INST instruct) {
    else if (instruct.type == 'j') {    //Jump Type
       //printf("Jump\n");
       return execute_j_helper(instruct);
-   }  
+   }
 
    else if (instruct.type == 'y') { //HALT
       //printf("Syscall\n");
@@ -97,7 +97,7 @@ INST execute(INST instruct) {
          return instruct;
       }
    }
-   else { 
+   else {
       //printf("Could not find type\n");
       return instruct;
    }
@@ -106,12 +106,12 @@ INST execute(INST instruct) {
 //=============== Memory ===================================================================================
 
 INST memory(INST instruct) {
-   if (instruct.type == 's') {      //Load and Store 
+   if (instruct.type == 's') {      //Load and Store
       switch (instruct.opcode) {
-         case 0x20:           // I Type (lb) 
+         case 0x20:           // I Type (lb)
             instruct.rt_value = heap[instruct.heap_addr] & 0x000000FF;
             break;
-         case 0x24:           // I Type (lbu) 
+         case 0x24:           // I Type (lbu)
             instruct.rt_value = heap[instruct.heap_addr] & 0x000000FF;
             break;
          case 0x21:           // I Type (lh)
@@ -119,29 +119,29 @@ INST memory(INST instruct) {
             break;
          case 0x25:           // I Type (lhu)
             instruct.rt_value = heap[instruct.heap_addr] & 0x0000FFFF;
-            break; 
+            break;
          case 0x0F:           // I Type (lui)
             instruct.rt_value = heap[instruct.heap_addr] & 0xFFFF0000;
             break;
          case 0x23:           // I Type (lw)
             instruct.rt_value = heap[instruct.heap_addr];
             break;
-         case 0x28:           // I Type (sb) 
+         case 0x28:           // I Type (sb)
             heap[instruct.heap_addr] = instruct.rt_value & 0x000000FF;
             break;
-         case 0x29:          // I Type (sh) 
+         case 0x29:          // I Type (sh)
             heap[instruct.heap_addr] = instruct.rt_value & 0x0000FFFF;
             break;
-         case 0x2B:         // I Type (sw) 
+         case 0x2B:         // I Type (sw)
             heap[instruct.heap_addr] = instruct.rt_value;
-            break; 
+            break;
          }
 
    }
 
    if (instruct.type == 'b') {  //Branch
       switch (instruct.opcode) {
-         case 0x04:     // I Type (beq) 
+         case 0x04:     // I Type (beq)
             if (instruct.rs == instruct.rt) {
                instruct.pc = instruct.brn_addr;    //set pc to branch address
             }
@@ -167,8 +167,20 @@ INST memory(INST instruct) {
 
 //================== Write back ==============================================================================
 
-INST writeback(INST instruct) {
-   return instruct;
+INST writeback(INST instruct, REG regs[]) {
+    //TODO jump and link and jump and link register
+    if (instruct.func_code == 0x08 | instruct.func_code == 0x09) {
+       regs[31] = instruct.ra
+    }
+    //r Types - compare to i Types store in rd
+    if (instruct.type == 'r') {
+        regs[instruct.rd] = instruct.rd_value;
+    }
+    //i types store in a different place
+    if (instruct.type == 'i') {
+        regs[instruct.rt] = instruct.rt_value;
+    }
+    return instruct;
 }
 
 //===========================================================================================================
@@ -188,26 +200,26 @@ char type(unsigned int op_code, MIPS ir) {
    }
    switch(op_code) {
       case 0x00: return 'r'; 		// R Type
-      case 0x02: return 'j'; 		// J Type (j), 
-      case 0x03: return 'j';		// J Type (jal) 
-      case 0x08: return 'i';		// I Type (addi) 
-      case 0x09: return 'i';		// Type (addiu) 
-      case 0x0C: return 'i';		// I Type (andi) 
-      case 0x0D: return 'i';		// I Type (ori) 
-      case 0x0E: return 'i';		// I Type (xori) 
-      case 0x0A: return 'i';		// I Type (slti) 
-      case 0x0B: return 'i';		// Type (sltiu) 
-      case 0x04: return 'b';		// I Type (beq) 
-      case 0x05: return 'b';		// I Type (bne) 
-      case 0x20: return 's';		// I Type (lb) 
-      case 0x24: return 's';		// I Type (lbu) 
-      case 0x21: return 's';		// I Type (lh) 
-      case 0x25: return 's';		// I Type (lhu) 
-      case 0x0F: return 's';		// I Type (lui) 
-      case 0x23: return 's';		// I Type (lw) 
-      case 0x28: return 's';		// I Type (sb) 
-      case 0x29: return 's';		// I Type (sh) 
-      case 0x2B: return 's';		// I Type (sw)  
+      case 0x02: return 'j'; 		// J Type (j),
+      case 0x03: return 'j';		// J Type (jal)
+      case 0x08: return 'i';		// I Type (addi)
+      case 0x09: return 'i';		// Type (addiu)
+      case 0x0C: return 'i';		// I Type (andi)
+      case 0x0D: return 'i';		// I Type (ori)
+      case 0x0E: return 'i';		// I Type (xori)
+      case 0x0A: return 'i';		// I Type (slti)
+      case 0x0B: return 'i';		// Type (sltiu)
+      case 0x04: return 'b';		// I Type (beq)
+      case 0x05: return 'b';		// I Type (bne)
+      case 0x20: return 's';		// I Type (lb)
+      case 0x24: return 's';		// I Type (lbu)
+      case 0x21: return 's';		// I Type (lh)
+      case 0x25: return 's';		// I Type (lhu)
+      case 0x0F: return 's';		// I Type (lui)
+      case 0x23: return 's';		// I Type (lw)
+      case 0x28: return 's';		// I Type (sb)
+      case 0x29: return 's';		// I Type (sh)
+      case 0x2B: return 's';		// I Type (sw)
       default:
                  printf("0x%08X - Invalid Instruction.\n", ir);
                  return 'x';
@@ -241,11 +253,11 @@ int reg_d(MIPS ir) {
 }
 
 unsigned int shamt(MIPS ir) {                                                            //R Types
-   return ((ir >> 6) & 0x00000001F);    
+   return ((ir >> 6) & 0x00000001F);
 }
 
 int imm_val(MIPS ir) {                                                           //I Types
-   return (ir & 0x0000FFFF); 
+   return (ir & 0x0000FFFF);
 }
 
 int sign_extend(INST instruction) {
@@ -256,7 +268,7 @@ int sign_extend(INST instruction) {
    sign = (instruction.immed & 0x00008000);
 
    if (sign) {
-      sign_ext |= 0xFFFF0000; 
+      sign_ext |= 0xFFFF0000;
    }
 
    return sign_ext;
@@ -266,54 +278,54 @@ int sign_extend(INST instruction) {
 
 INST execute_r_helper(INST instruct) {
    switch (instruct.func_code) {
-      case 0x20:  // (add) 
+      case 0x20:  // (add)
          instruct.rd_value = (int)instruct.rs_value + (int)instruct.rt_value;
          break;
       case 0x21:  // (addu)
          instruct.rd_value = (unsigned int)instruct.rs_value + (unsigned int)instruct.rt_value;
-         break;   
+         break;
       case 0x22:  // (sub)
          instruct.rd_value = (int)instruct.rs_value - (int)instruct.rt_value;
          break;
       case 0x23:  // (subu)
          instruct.rd_value = (unsigned int)instruct.rs_value - (unsigned int)instruct.rt_value;
-         break;   
+         break;
       case 0x24:  // (and)
          instruct.rd_value = (unsigned int)instruct.rs_value & (unsigned int)instruct.rt_value;
-         break;   
+         break;
       case 0x27:  // (nor)
          instruct.rd_value = (unsigned int)instruct.rs_value | (unsigned int)instruct.rt_value;
-         break;   
+         break;
       case 0x25:  // (or)
          instruct.rd_value = (unsigned int)instruct.rs_value | (unsigned int)instruct.rt_value;
-         break;   
+         break;
       case 0x26:  // (xor)
          instruct.rd_value = (unsigned int)instruct.rt_value ^ (unsigned int)instruct.rt_value;
-         break;   
+         break;
       case 0x00:  // (sll)
          instruct.rd_value = (unsigned int)instruct.rt_value << instruct.shamt;
-         break;   
+         break;
       case 0x02:  // (srl)
          instruct.rd_value = (unsigned int)instruct.rt_value >> instruct.shamt;
-         break;   
+         break;
       case 0x03:  // (sra)
          instruct.rd_value = (int)instruct.rt_value >> instruct.shamt;
-         break;   
+         break;
       case 0x04:  // (sllv)
-         instruct.rd_value = (unsigned int)instruct.rt_value << (unsigned int)instruct.rt_value; 
-         break;   
+         instruct.rd_value = (unsigned int)instruct.rt_value << (unsigned int)instruct.rt_value;
+         break;
       case 0x06:  // (srlv)
-         instruct.rd_value = (unsigned int)instruct.rt_value >> (unsigned int)instruct.rt_value; 
-         break;   
+         instruct.rd_value = (unsigned int)instruct.rt_value >> (unsigned int)instruct.rt_value;
+         break;
       case 0x07:  // (srav)
-         instruct.rd_value = (int)instruct.rt_value >> (int)instruct.rt_value; 
-         break;   
+         instruct.rd_value = (int)instruct.rt_value >> (int)instruct.rt_value;
+         break;
       case 0x2A:  // (slt)
-         instruct.rd_value = (int)instruct.rt_value < ((int)instruct.rt_value)? 1:0; 
-         break;   
+         instruct.rd_value = (int)instruct.rt_value < ((int)instruct.rt_value)? 1:0;
+         break;
       case 0x2B:  // (sltu)
-         instruct.rd_value = (unsigned int)instruct.rt_value < ((unsigned int)instruct.rt_value)? 1:0; 
-         break;   
+         instruct.rd_value = (unsigned int)instruct.rt_value < ((unsigned int)instruct.rt_value)? 1:0;
+         break;
       case 0x08:  // (jr)
       case 0x09:  // (jalr)
           //jump address already calculated
@@ -325,28 +337,28 @@ INST execute_r_helper(INST instruct) {
 INST execute_i_helper(INST instruct) {
    printf("opcode = %d\n", instruct.opcode);
    switch (instruct.opcode) {
-      case 0x08:   // I Type (addi) 
+      case 0x08:   // I Type (addi)
          instruct.rt_value = (int) instruct.rs_value  + (int) instruct.immed;
-         printf("rs (%d) + immed (%d) = rt (%d)\n", instruct.rs_value, instruct.immed, instruct.rt_value);  
-         break;    
+         printf("rs (%d) + immed (%d) = rt (%d)\n", instruct.rs_value, instruct.immed, instruct.rt_value);
+         break;
       case 0x09:  // Type (addiu)
-         instruct.rt_value = (unsigned int) instruct.rs_value + (unsigned int) instruct.immed; 
-         break;    
-      case 0x0C:  // I Type (andi) 
-         instruct.rt_value = (unsigned int) instruct.rs_value & (unsigned int) instruct.rt_value; 
-         break;    
+         instruct.rt_value = (unsigned int) instruct.rs_value + (unsigned int) instruct.immed;
+         break;
+      case 0x0C:  // I Type (andi)
+         instruct.rt_value = (unsigned int) instruct.rs_value & (unsigned int) instruct.rt_value;
+         break;
       case 0x0D:  // I Type (ori)
          instruct.rt_value = (unsigned int) instruct.rs_value | (unsigned int) instruct.immed;
-         break;    
+         break;
       case 0x0E:  // I Type (xori)
          instruct.rt_value = (unsigned int) instruct.rs_value ^ (unsigned int) instruct.immed;
-         break;     
-      case 0x0A:  // I Type (slti) 
+         break;
+      case 0x0A:  // I Type (slti)
          instruct.rt_value =  (int) instruct.rs_value < (int) instruct.immed;
-         break;   
+         break;
       case 0x0B:  // I Type (sltiu)
-         instruct.rt_value =  (unsigned int) instruct.rs_value < (unsigned int) instruct.immed; 
-         break;     
+         instruct.rt_value =  (unsigned int) instruct.rs_value < (unsigned int) instruct.immed;
+         break;
    }
    return instruct;
 }
@@ -354,28 +366,28 @@ INST execute_i_helper(INST instruct) {
 INST execute_s_helper(INST instruct) {
    instruct.eff_addr = eff_addr_load(instruct.curr_instruction);
    switch (instruct.opcode) {
-      case 0x24:  // I Type (lbu) 
+      case 0x24:  // I Type (lbu)
       case 0x25:  // I Type (lhu)
          instruct.heap_addr = (unsigned int)instruct.rt_value + (unsigned int)instruct.eff_addr;
-         break; 
+         break;
       case 0x20:  // I Type (lb)
       case 0x21:  // I Type (lh)
       case 0x0F:  // I Type (lui)
       case 0x23:  // I Type (lw)
          instruct.heap_addr = instruct.rt_value + instruct.eff_addr;
          break;
-      case 0x28:  // I Type (sb) 
-      case 0x29:  // I Type (sh) 
-      case 0x2B:  // I Type (sw) 
+      case 0x28:  // I Type (sb)
+      case 0x29:  // I Type (sh)
+      case 0x2B:  // I Type (sw)
          instruct.heap_addr = instruct.rs + instruct.eff_addr;
-         break; 
+         break;
    }
    return instruct;
 }
 
 INST execute_b_helper(INST instruct) {
    switch (instruct.opcode) {
-      case 0x04:     // I Type (beq) 
+      case 0x04:     // I Type (beq)
          if (instruct.rs == instruct.rt) {
             instruct.brn_addr = instruct.pc + eff_addr(instruct.pc, instruct.immed);
          }
@@ -403,7 +415,7 @@ unsigned int jmp_addr(MIPS ir) {                                                
 
    jmp_addr = (ir & 0x03FFFFFF);
 
-   jmp_addr <<= 2;   
+   jmp_addr <<= 2;
    return jmp_addr;
 }
 
