@@ -2,6 +2,7 @@
 #define CACHESIM     1		    // Set to 1 if simulating Cache
 #define CACHE_WORDS  16             // 16 or 256 words of cache
 #define INDEX_BITS   4              // the amount of bits for the index in cache
+#define TAG_BITS     26             // the rest of the 32 bits for tag either 26 or 22 bits
 #define ASSOCIATIVE  1              // associativity of 1, 2, or 4
 
 #include <stdio.h>
@@ -23,9 +24,12 @@ void check_in_cache() {
    // for loop checking indexes and comparing it to the data already in cache
 }
 
-void cache_word(int *mp, word new_word) {
+void cache_word(int *mp, word* new_word) {
    // translate the pointer into a cache word struct
    // need variable sizes of all the bit width for each field based on tag/index
+   new_word->tag = (mp >> (INDEX_BITS + OFFSET_BITS));
+   new_word->index (mp << TAG_BITS); // throw away tag bits
+   new_word->index = (new_word->index >> OFFSET_BITS + TAG_BITS); // now remove the offset and put it at the bottom of the word
 }
 
 void miss() {
