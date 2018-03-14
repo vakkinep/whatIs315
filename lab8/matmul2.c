@@ -6,9 +6,9 @@
 
 #include <stdio.h>
 
-typedef struct cache {
-   long[CACHE_WORDS];
-};
+long cache[CACHE_WORDS];
+int  misses;
+int  hits;
 
 typedef struct word {
    unsigned int index;
