@@ -1,20 +1,45 @@
-#define AMAX 10			/* Maximum (square) array size */
-
-#define CACHESIM 0		/* Set to 1 if simulating Cache */
+#define AMAX         10		    // Maximum (square) array size of 2 or 10
+#define CACHESIM     1		    // Set to 1 if simulating Cache
+#define CACHE_WORDS  16             // 16 or 256 words of cache
+#define INDEX_BITS   4              // the amount of bits for the index in cache
+#define ASSOCIATIVE  1              // associativity of 1, 2, or 4
 
 #include <stdio.h>
+
+typedef struct cache {
+   long[CACHE_WORDS];
+};
+
+typedef struct word {
+   unsigned int index;
+   unsigned int tag;
+   unsigned int offset;
+};
 
 /*	memory management, code density, Cache emulation - statistics generation */
 /*	Generated for CSC 315 Lab 5 */
 
+void check_in_cache() {
+   // for loop checking indexes and comparing it to the data already in cache
+}
+
+void cache_word(int *mp, word new_word) {
+   // translate the pointer into a cache word struct
+   // need variable sizes of all the bit width for each field based on tag/index
+}
+
+void miss() {
+   //increment misses and write the value into the array in Random order
+}
 
 /* This function gets called with each "read" reference to memory */
+
 //TODO
 void mem_read(int *mp)
 {
    // USE A STRUCT TO SIMULATE CACHE HERE AND IN MEM_WRITE
    // HAVE AN ARRAY HOLDING ALL RECENTLY USED ADDRESSES AND INCREMENT HIT AND MISSES
-   /* printf("Memory read from location %p\n", mp);  */
+   printf("Memory read from location %p\n", mp);
 }
 
 
@@ -22,7 +47,7 @@ void mem_read(int *mp)
 
 void mem_write(int *mp)
 {
-   /* printf("Memory write to location %p\n", mp); */
+   printf("Memory write to location %p\n", mp);
 }
 
 /* Statically define the arrays a, b, and mult, where mult will become the cross product of a and b, i.e., a x b. */
