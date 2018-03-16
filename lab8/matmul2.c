@@ -3,33 +3,41 @@
 #define CACHE_WORDS  16             // 16 or 256 words of cache
 #define INDEX_BITS   4              // the amount of bits for the index in cache
 #define TAG_BITS     26             // the rest of the 32 bits for tag either 26 or 22 bits
-#define ASSOCIATIVE  1              // associativity of 1, 2, or 4
+#define OFFSET_BITS  2              // the bits of offset in cache
+#define ASSOCIATIVE  1              // associativity of 1, 2, or 4 and that affects tag and index size
 
 #include <stdio.h>
 
-long cache[CACHE_WORDS];
+unsigned long cache[CACHE_WORDS] = {0};
 int  misses;
 int  hits;
 
 typedef struct word {
-   unsigned int index;
-   unsigned int tag;
-   unsigned int offset;
-};
+   unsigned long index;
+   unsigned long tag;
+   unsigned long offset;
+   signed   int data;
+} word;
 
 /*	memory management, code density, Cache emulation - statistics generation */
 /*	Generated for CSC 315 Lab 5 */
 
 void check_in_cache() {
    // for loop checking indexes and comparing it to the data already in cache
+   int i;
+   for (i = 0; i < CACHE_WORDS ; i++) {
+      printf("CACHE[%d]\t 0x%08X\n", i, cache[i]);
+      printf("Random number %d\n", (rand() % CACHE_WORDS));       // so we can use this in miss
+   }
 }
 
 void cache_word(int *mp, word* new_word) {
    // translate the pointer into a cache word struct
    // need variable sizes of all the bit width for each field based on tag/index
-   new_word->tag = (mp >> (INDEX_BITS + OFFSET_BITS));
-   new_word->index (mp << TAG_BITS); // throw away tag bits
-   new_word->index = (new_word->index >> OFFSET_BITS + TAG_BITS); // now remove the offset and put it at the bottom of the word
+   new_word->tag = (((unsigned int) mp) >> (INDEX_BITS + OFFSET_BITS));
+   new_word->index  = (((unsigned int) mp) << TAG_BITS); // throw away tag bits
+   new_word->index >>= (TAG_BITS + OFFSET_BITS); // now remove the offset and put it at the bottom of the word
+   new_word->data = (*mp);
 }
 
 void miss() {
@@ -41,9 +49,19 @@ void miss() {
 //TODO
 void mem_read(int *mp)
 {
+   unsigned long addr;
    // USE A STRUCT TO SIMULATE CACHE HERE AND IN MEM_WRITE
    // HAVE AN ARRAY HOLDING ALL RECENTLY USED ADDRESSES AND INCREMENT HIT AND MISSES
    printf("Memory read from location %p\n", mp);
+
+   // Is the size of the pointer 8 bytes or 4? Bc the %p only prints 3 bytes and this is assuming 32 bit addr
+   //TEST TO SEE IF THE ARITHMATIC OR LOGICAL SHIFT WORKS SO WE CAN USE IT IN INDEX 
+   printf("PRE-SHIFT \t0x%08X\n", mp);
+   //sizeof INT is 4 bytes so 8 hex and shift by 8 bits in a byte times 2 bytes so 16 bits to cut it in half
+   addr = (((unsigned int) mp) << 16); 
+   printf("POST-SHIFT \t0x%08X\n", addr);
+   addr >>= 16; 
+   printf("RE-SHIFT \t0x%08X\n", addr);
 }
 
 
@@ -62,7 +80,6 @@ void matmul(int r1,int c1,int c2 )
 {
    int i,j,k;
    int *mp1, *mp2, *mp3;
-
 
 
    /* Initializing elements of matrix mult to 0.*/
@@ -101,8 +118,11 @@ int main()
    int r1, c1, r2, c2, i, j, k;
 
    int *mp1, *mp2, *mp3;
+   srand(0);                  // so we can use consistent "random" values for writing to cache
 
-   printf("Size of pointer is: %d\n\n", sizeof(mp1));
+   check_in_cache();
+
+   printf("Size of pointer is: %d bytes\n\n", sizeof(mp1));
 
    printf("Enter rows and column for first matrix: ");
    scanf("%d%d", &r1, &c1);
