@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 
-//TESTING SCRIPT FOR AUSTIN
 word cache[CACHE_WORDS] = {NULL};
 int  misses = 0;
 int  hits = 0;
