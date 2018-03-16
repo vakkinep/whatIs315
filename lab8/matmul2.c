@@ -8,9 +8,9 @@
 
 #include <stdio.h>
 
-unsigned long cache[CACHE_WORDS] = {0};
-int  misses;
-int  hits;
+word cache[CACHE_WORDS] = {NULL};
+int  misses = 0;
+int  hits = 0;
 
 typedef struct word {
    unsigned long index;
@@ -22,13 +22,22 @@ typedef struct word {
 /*	memory management, code density, Cache emulation - statistics generation */
 /*	Generated for CSC 315 Lab 5 */
 
-void check_in_cache() {
+void check_in_cache(word curr_word) {
    // for loop checking indexes and comparing it to the data already in cache
+   // should it check index or loop through it all?
    int i;
    for (i = 0; i < CACHE_WORDS ; i++) {
       printf("CACHE[%d]\t 0x%08X\n", i, cache[i]);
+      if (cache[i] != NULL) {
+         if (curr_word.tag == cache[i].tag) {
+            hits++;
+            printf("\n\nHIT! \n\n");
+            return;
+         }
+      }
       printf("Random number %d\n", (rand() % CACHE_WORDS));       // so we can use this in miss
    }
+   miss(curr_word);
 }
 
 void cache_word(int *mp, word* new_word) {
@@ -40,8 +49,10 @@ void cache_word(int *mp, word* new_word) {
    new_word->data = (*mp);
 }
 
-void miss() {
+void miss(word curr_word) {
    //increment misses and write the value into the array in Random order
+   misses++;
+   cache[curr_word.index] = curr_word;
 }
 
 /* This function gets called with each "read" reference to memory */
