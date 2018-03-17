@@ -8,7 +8,7 @@
 #define INDEX_BITS   4              // the amount of bits for the index in cache
 #define TAG_BITS     26             // the rest of the 32 bits for tag either 26 or 22 bits
 #define OFFSET_BITS  2              // the bits of offset in cache
-#define ASSOCIATIVE  4              // associativity of 1, 2, or 4 and that affects tag and index size
+#define ASSOCIATIVE  1              // associativity of 1, 2, or 4 and that affects tag and index size aka cubby size
 
 #include <stdio.h>
 #include <math.h>
@@ -39,7 +39,7 @@ void miss(word curr_word) {
    misses++;
    if (ASSOCIATIVE <= 1) {                //direct mapped
       cache[curr_word.index].tag = curr_word.tag;
-      cache[curr_word.index].index = curr_word.index;    
+      cache[curr_word.index].index = curr_word.index;
       cache[curr_word.index].valid = curr_word.valid;
     } else {                           //Associative
       cache[curr_word.index + (rand() % ASSOCIATIVE)].tag = curr_word.tag;
@@ -50,12 +50,13 @@ void miss(word curr_word) {
 
 void check_in_cache(word curr_word) {
    // for loop checking indexes and comparing it to the data already in cache
-   // should it check index or loop through it all? (Check using for loop for associative)
+   // Check the first index and if it's associative then check the rest of the cubby
+   // == to checking all the comparators
 	int i;
 	for (i = 0; i < ASSOCIATIVE ; i++) {
-      if (cache[i].valid) {					      //check if valid
-         if (curr_word.tag == cache[i].tag) {	//if valid, check tag
-            hits++;								      //if in cache, hit.
+      if (cache[(curr_word.index + i)].valid) {					      //check if valid
+         if (curr_word.tag == cache[(curr_word.index + i)].tag) {	  //if valid, check tag
+            hits++;								                      //if in cache, hit.
             return;
         }
     }
@@ -66,16 +67,15 @@ void check_in_cache(word curr_word) {
 void cache_word(int *mp, word* new_word) {
    // translate the pointer into a cache word struct
    // need variable sizes of all the bit width for each field based on tag/index
-	new_word->tag = (((unsigned long) mp) >> (INDEX_BITS + OFFSET_BITS));
+   new_word->tag = (((unsigned long) mp) >> (INDEX_BITS + OFFSET_BITS));
    new_word->index  = (((unsigned long) mp) << TAG_BITS);
-   new_word->index  %= (unsigned long)floor(CACHE_SIZE/ASSOCIATIVE); // throw away tag bits
    new_word->index >>= (TAG_BITS + OFFSET_BITS); // now remove the offset and put it at the bottom of the word
+   new_word->index  %= (unsigned long)floor(CACHE_SIZE/ASSOCIATIVE); // throw away tag bits
    new_word->valid = 1;
 }
 
 /* This function gets called with each "read" reference to memory */
 
-//TODO
 void mem_read(int *mp)
 {
    word new_word;
@@ -90,7 +90,7 @@ void mem_read(int *mp)
 
 void mem_write(int *mp)
 {
-   misses++;                                             //write-through
+   misses++;                                             //write-through, change the data which sim doesnt need to do and inc miss
 }
 
 /* Statically define the arrays a, b, and mult, where mult will become the cross product of a and b, i.e., a x b. */
@@ -120,11 +120,11 @@ void matmul(int r1,int c1,int c2 )
 #if CACHESIM		/* "Hooks" to measure memory references - enabled if CACHESIM  */
 					mp1 = &mult[i][j];
 					mp2 = &a[i][k];
-					mp3 = &b[k][j];   
+					mp3 = &b[k][j];
 					mem_read(mp1);
 					mem_read(mp2);
 					mem_read(mp3);
-					mem_write(mp1); 
+					mem_write(mp1);
 #endif
 
 					mult[i][j]+=a[i][k]*b[k][j];
@@ -179,7 +179,7 @@ void matmul(int r1,int c1,int c2 )
      		b[i][j] = 10 + i + j;
      	}
 
-   matmul(r1, c1, c2);  	/* Invoke matrix multiply function */	
+   matmul(r1, c1, c2);  	/* Invoke matrix multiply function */
 
    /* Displaying the multiplication of two matrix. */
      	printf("\nOutput Matrix:\n");
